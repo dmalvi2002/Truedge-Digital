@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CursorProvider } from "./utils/CursorProvider";
+// import { CursorProvider } from "./utils/CursorProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import FluidAdaptiveCursor from "@/components/ui/BubbleCursor";
-import PageGridBackground from "@/components/ui/AnimatedGridBackground";
+// import FluidAdaptiveCursor from "@/components/ui/BubbleCursor";
+// import PageGridBackground from "@/components/ui/AnimatedGridBackground";
 import AnimatedGrid from "@/components/ui/AnimatedGrid";
 import CustomCursor from "./utils/CustomCursor";
 

@@ -1,7 +1,6 @@
 "use client";
-import { useState, ReactNode } from "react";
+import { useState } from "react";
 import Button from "../utils/Button";
-import RippleButton from "../utils/RippleButton";
 
 export default function Home() {
   const [activeColor, setActiveColor] = useState("#3b82f6"); // Default blue
