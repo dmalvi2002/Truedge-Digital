@@ -5,55 +5,148 @@ export interface ServiceData {
   description: string;
   gifUrl: string;
   points: string[];
+  modals?: ServiceModel[];
+}
+
+export interface ServiceModel {
+  id: number;
+  title: string;
+  features: string[];
+  highlight?: boolean;
 }
 
 export const services: ServiceData[] = [
   {
     id: 1,
-    title: "Web Development",
+    title: "Website Design & Development",
     description:
-      "We build beautiful, responsive websites that drive results for your business. Our web development services combine cutting-edge technologies with creative design to deliver exceptional online experiences.",
+      "We create stunning, responsive websites that drive results for your business. Our expert team combines cutting-edge technologies with creative design to deliver exceptional online experiences tailored to your brand.",
     gifUrl: "/images/service1.gif", // Replace with actual path in your project
     points: [
-      "Custom website design and development",
-      "E-commerce solutions with secure payment gateways",
-      "Content management systems for easy updates",
-      "Performance optimization for lightning-fast load times",
-      "SEO-friendly architecture and responsive layouts",
-      "Progressive Web Apps (PWA) development",
-      "Accessibility and cross-browser compatibility",
+      "Professional UI/UX Design with FIGMA",
+      "High Quality Animation",
+      "Powerful Functionality & Software Integration",
+      "SEO-based Design & Development",
+      "Mobile Friendly Interface",
+      "Content Management Enabled (CMS)",
+      "Social Media Integration",
+      "Front End & Back End Support/Integration",
+      "Security Protection (SSL Certificate)",
+      "Web Hosting",
+      "Ultra Blazing Fast Website",
+      "Technical Support 365 - Maintenance & Backup",
+    ],
+    modals: [
+      {
+        id: 101,
+        title: "1 Page Website",
+        features: [
+          "1 Page Website",
+          "Includes Contact Page",
+          "Professional UI/UX Design",
+          "SEO based Design & Development",
+          "Ultra Blazing Fast Website",
+          "High Quality Animation",
+          "Mobile Friendly",
+          "Security Protection (SSL Certificate)",
+          "Web Hosting Setup",
+          "Delivery in 10 days",
+        ],
+      },
+      {
+        id: 102,
+        title: "Business Essential",
+        features: [
+          "Up to 6 Page Website",
+          "Includes BLOG Page & Testimonial & Gallery Page",
+          "Professional UI/UX Design",
+          "SEO based design & Development",
+          "Ultra Blazing Fast Website",
+          "High Quality Animation",
+          "Mobile Friendly",
+          "Front End & Back End Support/Integration",
+          "Security Protection (SSL Certificate)",
+          "Web Hosting Setup",
+          "Social Media Integration",
+          "Customer Support 365",
+          "Delivery in 25 days",
+        ],
+        highlight: true,
+      },
+      {
+        id: 103,
+        title: "Business Professional",
+        features: [
+          "Fully Customised 10+ Page Website",
+          "Includes Everything from Business Essential",
+          "Third Party Software / API Integration",
+          "Powerful Functionality",
+          "Full backend/CMS integration without any limitations",
+          "1 year free premium Hosting",
+          "Full SEO Services for 3 months (On page SEO, Off page SEO, Backlinks, Speed, Schema, Technical Fixes)",
+          "Logo & Full Brand Identity Package (Logo, Business Card, Letterhead, Email Signature)",
+          "VIP Customer Support",
+          "Delivery in 25 days",
+        ],
+      },
     ],
   },
   {
     id: 2,
-    title: "Mobile App Development",
+    title: "SEO & Digital Marketing",
     description:
-      "Native and cross-platform mobile applications that deliver exceptional user experiences. Our mobile development team creates intuitive, high-performance apps for iOS and Android platforms.",
+      "Boost your online visibility and drive targeted traffic with our comprehensive SEO and digital marketing solutions. Our data-driven strategies help you connect with your audience, increase brand awareness, and achieve measurable business growth.",
     gifUrl: "/images/service2.gif", // Replace with actual path in your project
     points: [
-      "iOS and Android native app development",
-      "React Native and Flutter cross-platform expertise",
-      "UI/UX design specifically optimized for mobile",
-      "App store optimization and submission assistance",
-      "Ongoing maintenance, updates, and support",
-      "Integration with third-party services and APIs",
-      "Offline functionality and data synchronization",
+      "Free Website Audit & SEO Audit",
+      "On-page SEO Optimization",
+      "Off-page SEO & Link Building",
+      "Technical SEO & Site Speed Optimization",
+      "Content Strategy & Creation",
+      "Local SEO & Google Business Profile Optimization",
+      "Social Media Marketing & Management",
+      "Email Marketing Campaigns",
+      "Pay-Per-Click Advertising",
+      "Analytics Setup & Performance Tracking",
+      "Conversion Rate Optimization",
+      "Monthly Reporting & Strategy Adjustments",
     ],
-  },
-  {
-    id: 3,
-    title: "Digital Marketing",
-    description:
-      "Strategic marketing campaigns that connect with your audience and drive conversions. Our data-driven approach ensures your marketing budget is invested for maximum ROI and business growth.",
-    gifUrl: "/images/service3.gif", // Replace with actual path in your project
-    points: [
-      "Social media marketing and community management",
-      "Email marketing campaigns with personalized content",
-      "Pay-per-click advertising and retargeting strategies",
-      "Content strategy, creation, and distribution",
-      "Analytics setup, monitoring, and reporting",
-      "Search engine optimization (SEO) and local SEO",
-      "Conversion rate optimization and A/B testing",
+    modals: [
+      {
+        id: 201,
+        title: "SEO Essentials",
+        features: [
+          "Complete Website SEO Audit",
+          "Keyword Research & Strategy",
+          "On-page SEO Optimization",
+          "Content Optimization",
+          "Schema Markup Implementation",
+          "Google Business Profile Setup/Optimization",
+          "Local SEO Improvements",
+          "Basic Link Building",
+          "Monthly Performance Reports",
+          "3-Month Minimum Contract",
+        ],
+      },
+      {
+        id: 202,
+        title: "Complete Digital Marketing",
+        features: [
+          "Everything in SEO Essentials",
+          "Advanced Technical SEO",
+          "Premium Link Building Strategy",
+          "Content Creation (2 Blog Posts/Month)",
+          "Social Media Account Management",
+          "Social Media Content Calendar",
+          "Email Marketing Campaigns",
+          "PPC Campaign Management",
+          "Conversion Rate Optimization",
+          "Comprehensive Analytics & Reporting",
+          "Dedicated Account Manager",
+          "6-Month Minimum Contract",
+        ],
+        highlight: true,
+      },
     ],
   },
 ];
