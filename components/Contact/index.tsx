@@ -242,6 +242,7 @@ const ContactSection = () => {
     <div
       ref={contactSectionRef}
       className="relative py-24 bg-transparent overflow-hidden"
+      id="contact"
     >
       {/* Particles background */}
       <div

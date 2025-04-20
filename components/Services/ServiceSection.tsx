@@ -250,7 +250,8 @@ const ServiceSection = () => {
   const handleLearnMore = useCallback(
     (serviceId: number) => {
       // Navigate to the service detail page
-      router.push(`/services/${serviceId}`);
+      // router.push(`/services/${serviceId}`);
+      router.push(`/services`);
     },
     [router]
   );

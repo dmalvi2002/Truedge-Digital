@@ -1,10 +1,11 @@
 import { url } from "inspector";
 
 export const navItems = [
-  { name: "About", link: "#about" },
-  { name: "Projects", link: "#projects" },
-  { name: "Testimonials", link: "#testimonials" },
-  { name: "Contact", link: "#contact" },
+  { name: "About", link: "/#about" },
+  { name: "Projects", link: "/#projects" },
+  { name: "Home", link: "/" },
+  { name: "Services", link: "/services" },
+  { name: "Contact", link: "/#contact" },
 ];
 
 export const gridItems = [
