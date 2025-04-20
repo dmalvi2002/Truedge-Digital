@@ -353,7 +353,7 @@ const Footer = () => {
     <footer
       ref={footerRef}
       className="w-full pt-20 pb-10 relative overflow-hidden backdrop-blur-sm bg-black/30"
-      id="contact"
+      id="footer"
     >
       {/* Background effects - client-side only */}
       {mounted && (
