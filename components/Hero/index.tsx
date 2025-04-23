@@ -67,14 +67,15 @@ const Hero = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 3, duration: 0.5, type: "spring" }}
             >
-              <a href="#about">
-                <MagicButton
-                  title="Get in touch"
-                  icon={<FaLocationArrow />}
-                  position="right"
-                  otherClasses="bg-gradient-to-r from-indigo-600 via-indigo-800 to-indigo-950 hover:from-purple-600 hover:via-purple-700 hover:to-purple-950"
-                />
-              </a>
+              <MagicButton
+                handleClick={() => {
+                  window.location.href = "/#about";
+                }}
+                title="Get in touch"
+                icon={<FaLocationArrow />}
+                position="right"
+                otherClasses="bg-gradient-to-r from-indigo-600 via-indigo-800 to-indigo-950 hover:from-purple-600 hover:via-purple-700 hover:to-purple-950"
+              />
             </motion.div>
           </motion.div>
         </div>
