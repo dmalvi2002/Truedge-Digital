@@ -1,18 +1,20 @@
+"use client";
 import React, { useEffect, useState, useRef } from "react";
 
 const TypingAnimation = ({
   text = "This text keeps typing itself forever with a two-layer effect...",
   typingSpeed = 100,
   pauseBeforeRestart = 500,
-  fadedOpacity = 0.3,
-  typingFadeEffect = 0.7, // Opacity of already typed text (higher = less faded)
-  fadeDelay = 150, // Delay in ms before characters start fading
+  fadedOpacity = 0.1,
+  typingFadeEffect = 0.3, // Opacity of already typed text (higher = less faded)
+  fadeDelay = 650, // Delay in ms before characters start fading
 }) => {
   const [activeText, setActiveText] = useState("");
   const [fadedText, setFadedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [charOpacities, setCharOpacities] = useState<number[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef(null);
+  const containerRef = useRef(null);
 
   // Handle typing animation
   useEffect(() => {
@@ -85,16 +87,60 @@ const TypingAnimation = ({
   };
 
   return (
-    <div className="text-4xl max-w-[540px] font-extrabold p-4 bg-transparent text-white h-24 relative overflow-hidden">
-      {/* Faded background layer */}
-      <div className="absolute top-4 left-4" style={{ opacity: fadedOpacity }}>
-        {fadedText}
-      </div>
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-full overflow-hidden p-4 md:p-6 bg-transparent text-white"
+      style={{
+        minHeight: "8rem",
+        height: "auto",
+      }}
+    >
+      {/* Container for text content with responsive font sizing */}
+      <div className="w-full relative">
+        {/* Faded background layer */}
+        <div
+          className="absolute top-0 left-0 w-full break-words"
+          style={{
+            opacity: fadedOpacity,
+            fontSize: "clamp(1.25rem, 5vw, 2.5rem)",
+            lineHeight: "1.3",
+            fontWeight: "800",
+          }}
+        >
+          {fadedText}
+        </div>
 
-      {/* Active typing layer */}
-      <div className="absolute top-4 left-4">
-        {renderActiveTextWithFading()}
-        <span className="inline-block w-2 h-5 bg-white ml-1 animate-pulse"></span>
+        {/* Active typing layer */}
+        <div
+          className="absolute top-0 left-0 w-full break-words"
+          style={{
+            fontSize: "clamp(1.25rem, 5vw, 2.5rem)",
+            lineHeight: "1.3",
+            fontWeight: "800",
+          }}
+        >
+          {renderActiveTextWithFading()}
+          <span
+            className="inline-block bg-white ml-1 animate-pulse"
+            style={{
+              width: "0.125rem",
+              height: "clamp(1rem, 4vw, 1.75rem)",
+              marginBottom: "-0.1em",
+            }}
+          ></span>
+        </div>
+
+        {/* Invisible text to ensure proper height calculation */}
+        <div
+          className="invisible w-full break-words"
+          style={{
+            fontSize: "clamp(1.25rem, 5vw, 2.5rem)",
+            lineHeight: "1.3",
+            fontWeight: "800",
+          }}
+        >
+          {text}
+        </div>
       </div>
     </div>
   );
