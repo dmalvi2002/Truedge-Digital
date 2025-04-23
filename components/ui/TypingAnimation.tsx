@@ -13,7 +13,7 @@ const TypingAnimation = ({
   const [fadedText, setFadedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [charOpacities, setCharOpacities] = useState<number[]>([]);
-  const timerRef = useRef(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef(null);
 
   // Handle typing animation
