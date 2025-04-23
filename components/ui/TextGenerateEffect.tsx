@@ -120,7 +120,7 @@ export const TextGenerateEffect = ({
   return (
     <div className={cn("font-bold", className)}>
       <div className="my-4">
-        <div className="text-white   leading-snug tracking-wide relative">
+        <div className="text-white leading-snug tracking-wide relative">
           {renderWords()}
 
           {/* Subtle background animation */}

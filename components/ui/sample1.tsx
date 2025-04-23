@@ -144,11 +144,9 @@ export const BackgroundGradientAnimation = ({
   };
 
   return (
-    // gradient colors
-    // bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]
     <div
       className={cn(
-        "w-full h-full absolute overflow-hidden top-0 left-0 bg-transparent ",
+        "w-full h-full absolute overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
         containerClassName
       )}
     >
@@ -187,7 +185,15 @@ export const BackgroundGradientAnimation = ({
 
       <div className="gradients-container h-full w-full">
         {interactive && (
-          <div ref={interactiveRef} onMouseMove={handleMouseMove}></div>
+          <div
+            ref={interactiveRef}
+            onMouseMove={handleMouseMove}
+            className={cn(
+              `absolute [background:radial-gradient(circle_at_center,_rgba(var(--pointer-color),_0.8)_0,_rgba(var(--pointer-color),_0)_50%)_no-repeat]`,
+              `[mix-blend-mode:var(--blending-value)] w-full h-full -top-1/2 -left-1/2`,
+              `opacity-70`
+            )}
+          ></div>
         )}
       </div>
     </div>

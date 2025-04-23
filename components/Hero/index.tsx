@@ -5,6 +5,7 @@ import MagicButton from "@/components/ui/MagicButton";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { TextGenerateEffect } from "@/components/ui/TextGenerateEffect";
 import HeroGlobe from "@/components/Hero/HeroClientGlobe";
+import TypingAnimation from "../ui/TypingAnimation";
 
 const Hero = () => {
   return (
@@ -39,10 +40,17 @@ const Hero = () => {
             </motion.p>
 
             {/* Enhanced TextGenerateEffect with word-by-word hover effects */}
-            <TextGenerateEffect
+            {/* <TextGenerateEffect
               words="Transforming Concepts into Seamless User Experiences"
-              className="text-[30px] md:text-[32px] lg:text-[40px] font-extrabold"
-              hoverEffects={true}
+              typingSpeed={50}
+              pauseBetweenAnimations={2000}
+            /> */}
+
+            <TypingAnimation
+              text="Transforming Concepts into Seamless User Experiences"
+              typingSpeed={100}
+              pauseBeforeRestart={500}
+              fadedOpacity={0.3}
             />
 
             <motion.p
@@ -64,6 +72,7 @@ const Hero = () => {
                   title="Get in touch"
                   icon={<FaLocationArrow />}
                   position="right"
+                  otherClasses="bg-gradient-to-r from-indigo-600 via-indigo-800 to-indigo-950 hover:from-purple-600 hover:via-purple-700 hover:to-purple-950"
                 />
               </a>
             </motion.div>

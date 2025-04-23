@@ -7,6 +7,7 @@ import Clients from "@/components/Clients";
 import CombinedSections from "@/components/CombinedSections";
 import ContactSection from "@/components/Contact";
 import ServiceSection from "@/components/Services/ServiceSection";
+import OfferCTA from "@/components/Services/OfferCTA";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <div className="max-w-7xl w-full">
           <Grid />
           <ServiceSection />
+          <OfferCTA />
           <RecentProjects />
           <Clients />
         </div>

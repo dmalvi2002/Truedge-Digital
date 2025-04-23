@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { services } from "./services";
 import Heading from "../ui/Heading";
 import MagicButton from "../ui/MagicButton";
+import OfferCTA from "./OfferCTA";
 
 // Define interface for modal data
 interface Modal {
@@ -92,7 +93,7 @@ const ModalCard = ({
             <span
               className={`text-lg ${
                 modal.highlight ? "text-indigo-400" : "text-purple-400"
-              } mt-1 flex-shrink-0`}
+              } mt-[2px] flex-shrink-0`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +115,7 @@ const ModalCard = ({
 
       <div className="mt-6 flex justify-center">
         <MagicButton
-          title="Select Package"
+          title="Get Quotation"
           icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -184,7 +185,7 @@ const ServiceCard = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
           {service.points.slice(0, 6).map((point, index) => (
             <div key={index} className="flex items-start gap-2 md:gap-3">
-              <span className="text-indigo-400 mt-1 flex-shrink-0">
+              <span className="text-indigo-400 mt-[2px] flex-shrink-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-4 w-4 md:h-5 md:w-5"
@@ -208,7 +209,7 @@ const ServiceCard = ({
         <div className="flex justify-end">
           <button
             onClick={() => onViewPackages(service.id)}
-            className="px-5 py-2 md:px-6 md:py-3 rounded-lg font-medium bg-gradient-to-r from-gray-600 to-bue-600 text-white hover:from-gray-600 hover:to-purple-950 transition-all transform hover:scale-105 shadow-md hover:shadow-indigo-600/20 text-sm md:text-base"
+            className="px-5 py-2 md:px-6 md:py-3 rounded-lg font-medium bg-gradient-to-r from-gray-600 to-gray-950 text-white hover:from-purple-300/50 hover:to-purple-950 transition-all transform hover:scale-105 shadow-md hover:shadow-indigo-600/20 text-sm md:text-base"
           >
             View Packages
             <svg
@@ -465,9 +466,9 @@ const ServicesPage = () => {
 
   // Hero section
   const HeroSection = () => (
-    <div className="relative flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-[50vh] mb-10 md:mb-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-black to-transparent z-10"></div>
-      <div className="absolute inset-0 bg-[url('/images/service-hero.jpg')] bg-cover bg-center opacity-40"></div>
+    <div className="relative container rounded-2xl mx-auto px-4 flex items-center justify-center overflow-hidden min-h-[40vh] md:min-h-[50vh] mb-10 md:mb-16">
+      <div className="absolute inset-0 bg-gradient-to-b from-black/90 to-transparent z-10"></div>
+      <div className="absolute inset-0 bg-[url('/images/grids/grid1.gif')] bg-cover bg-center opacity-100"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black"></div>
 
       <div className="relative z-20 text-center max-w-4xl mx-auto px-4">
@@ -502,6 +503,8 @@ const ServicesPage = () => {
       {/* Hero section */}
       <HeroSection />
 
+      <OfferCTA />
+
       {/* Services section */}
       <section className="container mx-auto px-4 py-8 md:py-16">
         <div className="space-y-6 md:space-y-12">
@@ -535,26 +538,29 @@ const ServicesPage = () => {
               goals. Contact us today for a free consultation.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-              <a href="/#contact">
-                <MagicButton
-                  title="Request a Quote"
-                  icon={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5 2a1 1 0 011 1v1h8V3a1 1 0 112 0v1h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h1V3a1 1 0 011-1zm11 14V8H4v8h12z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  }
-                  position="left"
-                />
-              </a>
+              {/* <a href="/#contact"> */}
+              <MagicButton
+                handleClick={() => {
+                  window.location.href = "/#contact";
+                }}
+                title="Request a Quote"
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5 2a1 1 0 011 1v1h8V3a1 1 0 112 0v1h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h1V3a1 1 0 011-1zm11 14V8H4v8h12z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                }
+                position="left"
+              />
+              {/* </a> */}
               <a
                 href="/#contact"
                 className="w-full sm:w-auto px-6 py-3 h-12 rounded-lg border border-gray-400/50 text-gray-200 hover:bg-gray-800/40 hover:border-gray-300/70 transition-all text-sm md:text-base flex items-center justify-center mt-4 sm:mt-0"

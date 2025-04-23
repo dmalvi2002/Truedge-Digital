@@ -37,7 +37,9 @@ export default function RootLayout({
           color="#6d28d9" // Purple color
           size={50} // Larger size
           buttonFillColor="rgba(109, 40, 217, 0.4)" // Semi-transparent purple
-          enableRipple={true} // Enable the global ripple effect
+          // Enable the global ripple effect
+          followSpeed={900} // Increased speed for faster following
+          disableOnMobile={true} // Disable the cursor on mobile devices
         />
         {/* Add the bubble cursor */}
         {/* <FluidAdaptiveCursor /> */}
