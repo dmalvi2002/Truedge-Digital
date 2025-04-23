@@ -386,19 +386,40 @@ const Footer = () => {
                 whileHover={{ scale: 1.2 }}
               >
                 your
+                {/* <motion.span
+                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                /> */}
+              </motion.span>{" "}
+              digital presence to the{" "}
+              <span className="relative inline-block">next level</span>?{" "}
+              <motion.span
+                className="text-purple-500 inline-block font-extrabold relative"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  color: ["#805ad5", "#9f7aea", "#805ad5"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                whileHover={{ scale: 1.2 }}
+              >
+                Get started
                 <motion.span
                   className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
                 />
-              </motion.span>{" "}
-              digital presence to the{" "}
-              <span className="relative inline-block">next level</span>?
+              </motion.span>
             </span>
           </FooterHeading>
 
-          <RevealText
+          {/* <RevealText
             delay={0.3}
             className="text-white-200 md:mt-10 my-6 text-center max-w-2xl text-lg md:text-xl font-medium"
           >
@@ -409,7 +430,7 @@ const Footer = () => {
                 achieve your goals
               </span>
             </motion.div>
-          </RevealText>
+          </RevealText> */}
         </div>
 
         <AnimatedBorder />

@@ -1,11 +1,26 @@
 import { url } from "inspector";
 
 export const navItems = [
-  { name: "About", link: "/#about" },
-  { name: "Projects", link: "/#projects" },
-  { name: "Home", link: "/" },
-  { name: "Services", link: "/services" },
-  { name: "Contact", link: "/#contact" },
+  { name: "About", link: "/#about", logo: false, img: "/icons/about.svg" },
+  {
+    name: "Projects",
+    link: "/#projects",
+    logo: false,
+    img: "/icons/projects.svg",
+  },
+  { name: "Home", link: "/", logo: true, img: "/logo.svg" },
+  {
+    name: "Services",
+    link: "/services",
+    logo: false,
+    img: "/icons/services.svg",
+  },
+  {
+    name: "Contact",
+    link: "/#contact",
+    logo: false,
+    img: "/icons/contact.svg",
+  },
 ];
 
 export const gridItems = [

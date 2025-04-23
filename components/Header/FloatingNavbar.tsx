@@ -17,6 +17,8 @@ export const FloatingNav = ({
     name: string;
     link: string;
     icon?: JSX.Element;
+    logo?: boolean;
+    img?: string;
   }[];
   className?: string;
 }) => {
@@ -80,9 +82,16 @@ export const FloatingNav = ({
             )}
           >
             <span className="block sm:hidden">{navItem.icon}</span>
-            {/* add !cursor-pointer */}
-            {/* remove hidden sm:block for the mobile responsive */}
-            <span className=" text-sm !cursor-pointer">{navItem.name}</span>
+            {/* Check if it's a logo to display image instead of name */}
+            {navItem.logo && navItem.img ? (
+              <img
+                src={navItem.img}
+                alt={navItem.name}
+                className="h-8 !cursor-pointer"
+              />
+            ) : (
+              <span className="text-sm !cursor-pointer">{navItem.name}</span>
+            )}
           </Link>
         ))}
         {/* remove this login btn */}

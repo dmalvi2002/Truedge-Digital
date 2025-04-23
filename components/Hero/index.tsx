@@ -64,6 +64,7 @@ const Hero = () => {
                   title="Get in touch"
                   icon={<FaLocationArrow />}
                   position="right"
+                  otherClasses="bg-gradient-to-r from-indigo-600 via-indigo-800 to-indigo-950 hover:from-purple-600 hover:via-purple-700 hover:to-purple-950"
                 />
               </a>
             </motion.div>

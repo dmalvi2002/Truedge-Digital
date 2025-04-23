@@ -301,7 +301,7 @@ const ServiceSection = () => {
       </div>
 
       {/* Fixed navigation dots */}
-      {NavigationDots}
+      {/* {NavigationDots} */}
 
       {/* Service cards - Only show the two services from services.ts */}
       <div>
