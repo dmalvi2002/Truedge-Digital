@@ -161,7 +161,7 @@ const ServiceInfoCard = ({
             ))}
           </ul>
 
-          <div className="mt-8">
+          <div className="mt-8 p-4">
             <MagicButton
               title="Learn More"
               icon={null}

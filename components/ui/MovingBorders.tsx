@@ -32,18 +32,21 @@ export function Button({
   return (
     <Component
       className={cn(
-        // remove h-16 w-40, add  md:col-span-2
-        "bg-transparent relative text-xl p-[1px] overflow-hidden md:col-span-2 md:row-span-1",
+        "bg-transparent relative text-xl p-[1px] overflow-hidden md:col-span-2 md:row-span-1 max-w-xl",
         containerClassName
       )}
       style={{
         borderRadius: borderRadius,
+        transform: "none", // Prevents any transform scaling
+        transition: "none", // Prevents any transition effects
       }}
       {...otherProps}
     >
       <div
-        className="absolute inset-0 rounde-[1.75rem]"
-        style={{ borderRadius: `calc(${borderRadius} * 0.96)` }}
+        className="absolute inset-0"
+        style={{
+          borderRadius: `calc(${borderRadius} * 0.96)`,
+        }}
       >
         <MovingBorder duration={duration} rx="30%" ry="30%">
           <div
@@ -62,6 +65,7 @@ export function Button({
         )}
         style={{
           borderRadius: `calc(${borderRadius} * 0.96)`,
+          transform: "none", // Prevents any transform scaling
         }}
       >
         {children}
@@ -131,6 +135,7 @@ export const MovingBorder = ({
           left: 0,
           display: "inline-block",
           transform,
+          scale: 1, // Explicitly set scale to 1 to prevent scaling
         }}
       >
         {children}
