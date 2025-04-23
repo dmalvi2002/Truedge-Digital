@@ -1,350 +1,383 @@
 "use client";
+import React, { useState, useEffect, useRef } from "react";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-} from "react";
-import { motion, useSpring, useTransform } from "framer-motion";
-
-type CursorState = "default" | "hover";
-type MixBlendMode =
-  | "normal"
-  | "multiply"
-  | "screen"
-  | "overlay"
-  | "darken"
-  | "lighten"
-  | "color-dodge"
-  | "color-burn"
-  | "hard-light"
-  | "soft-light"
-  | "difference"
-  | "exclusion"
-  | "hue"
-  | "saturation"
-  | "color"
-  | "luminosity";
-
-interface CursorContextType {
-  cursorState: CursorState;
-  setCursorState: (state: CursorState) => void;
-  targetElement: HTMLElement | null;
-  setTargetElement: (element: HTMLElement | null) => void;
-  cursorColor: string;
-  setCursorColor: (color: string) => void;
+interface CustomCursorProps {
+  color?: string;
+  size?: number;
+  hoverScale?: number;
+  buttonFillColor?: string;
+  enableRipple?: boolean;
 }
 
-const CursorContext = createContext<CursorContextType>({
-  cursorState: "default",
-  setCursorState: () => {},
-  targetElement: null,
-  setTargetElement: () => {},
-  cursorColor: "#4fd1c5",
-  setCursorColor: () => {},
-});
-
-export const useCursor = () => useContext(CursorContext);
-
-interface CursorProviderProps {
-  children: React.ReactNode;
-}
-
-export const CursorProvider: React.FC<CursorProviderProps> = ({ children }) => {
-  const [cursorState, setCursorState] = useState<CursorState>("default");
-  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
-  const [cursorColor, setCursorColor] = useState<string>("#4fd1c5");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [targetRect, setTargetRect] = useState({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
-
-  // Refs for cursor element
+const CustomCursor: React.FC<CustomCursorProps> = ({
+  color = "#3b82f6", // Default blue color
+  size = 40, // Default size
+  hoverScale = 1.5,
+  buttonFillColor = "rgba(59, 130, 246, 0.5)", // Semi-transparent blue
+  enableRipple = true,
+}) => {
   const cursorRef = useRef<HTMLDivElement>(null);
-
-  // Click ripple animation state
-  const [clickRipples, setClickRipples] = useState<
-    { id: number; x: number; y: number }[]
+  const rippleContainerRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(true);
+  const [isHoveringButton, setIsHoveringButton] = useState(false);
+  const [ripples, setRipples] = useState<
+    { id: string; x: number; y: number; size: number }[]
   >([]);
-  let rippleCounter = 0;
 
-  // Spring animations for smoother, squishier transitions
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.5 };
-  const cursorX = useSpring(0, springConfig);
-  const cursorY = useSpring(0, springConfig);
+  // Use useRef for tracking state that shouldn't trigger re-renders
+  const rippleCounterRef = useRef(0);
+  const lastMousePosRef = useRef({ x: 0, y: 0 });
+  const rafIdRef = useRef<number | null>(null);
+  const lastClickTimeRef = useRef(0);
+  const isMouseDownRef = useRef(false);
 
-  // For scaling and stretching effects
-  const scale = useSpring(1, springConfig);
-  const scaleX = useSpring(1, springConfig);
-  const scaleY = useSpring(1, springConfig);
-  const opacity = useSpring(1, { stiffness: 100, damping: 15 });
+  // Track active button elements
+  const activeButtonsRef = useRef<Set<HTMLElement>>(new Set());
 
-  // For morphing between circle and target shape
-  const borderRadius = useSpring("40px", { stiffness: 100, damping: 20 });
-
+  // Initialize and clean up button styles
   useEffect(() => {
-    // Main cursor movement handler
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+    // Function to set up buttons
+    const setupButtons = () => {
+      const buttons = document.querySelectorAll("button,a");
+      buttons.forEach((button) => {
+        if (button instanceof HTMLElement) {
+          // Only set up if not already initialized
+          if (!button.classList.contains("cursor-btn")) {
+            button.classList.add("cursor-btn");
 
-      // Update spring animations
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
-    };
-
-    // Click handler for ripple effect
-    const handleClick = (e: MouseEvent) => {
-      const newRipple = {
-        id: rippleCounter++,
-        x: e.clientX,
-        y: e.clientY,
-      };
-
-      setClickRipples((prev) => [...prev, newRipple]);
-
-      // Create a quick "squish" effect on click
-      scale.set(0.8);
-      setTimeout(() => scale.set(1), 100);
-
-      // Remove the ripple after animation completes
-      setTimeout(() => {
-        setClickRipples((prev) =>
-          prev.filter((ripple) => ripple.id !== newRipple.id)
-        );
-      }, 800);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("click", handleClick);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("click", handleClick);
-    };
-  }, [cursorX, cursorY, scale]);
-
-  // Effect to handle target element dimensions and position
-  useEffect(() => {
-    if (!targetElement) {
-      // Reset to default state
-      scale.set(1);
-      scaleX.set(1);
-      scaleY.set(1);
-      borderRadius.set("40px");
-      opacity.set(1);
-      return;
-    }
-
-    const updateTargetRect = () => {
-      const rect = targetElement.getBoundingClientRect();
-      setTargetRect({
-        x: rect.x + rect.width / 2,
-        y: rect.y + rect.height / 2,
-        width: rect.width,
-        height: rect.height,
+            // Create the fill element for each button
+            const fillElement = document.createElement("span");
+            fillElement.classList.add("btn-fill");
+            fillElement.style.position = "absolute";
+            fillElement.style.inset = "0";
+            fillElement.style.backgroundColor = buttonFillColor;
+            fillElement.style.transform = "scale(0)";
+            fillElement.style.transformOrigin = "center";
+            fillElement.style.transition =
+              "transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            fillElement.style.zIndex = "-1";
+            button.appendChild(fillElement);
+          }
+        }
       });
+    };
 
-      // Calculate distance to animate
-      const distX = rect.x + rect.width / 2 - mousePosition.x;
-      const distY = rect.y + rect.height / 2 - mousePosition.y;
+    // Initial setup
+    setupButtons();
 
-      // Get computed styles to match button
-      const computedStyle = window.getComputedStyle(targetElement);
-      const buttonBorderRadius = computedStyle.borderRadius;
+    // Set up a MutationObserver to handle dynamically added buttons
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length > 0) {
+          setupButtons();
+        }
+      });
+    });
 
-      // If hovering, morph the cursor to match the target element
-      if (cursorState === "hover") {
-        // Scale to match target with a slight padding
-        const scaleToWidth = (rect.width + 20) / 80;
-        const scaleToHeight = (rect.height + 20) / 80;
+    // Start observing the document with the configured parameters
+    observer.observe(document.body, { childList: true, subtree: true });
 
-        scale.set(1.2);
-        scaleX.set(scaleToWidth);
-        scaleY.set(scaleToHeight);
+    // Cleanup function
+    return () => {
+      observer.disconnect();
 
-        // Morph border radius to match the button's
-        borderRadius.set(buttonBorderRadius || "4px");
+      // Clean up all button styles
+      const buttons = document.querySelectorAll(".cursor-btn");
+      buttons.forEach((button) => {
+        if (button instanceof HTMLElement) {
+          button.classList.remove("cursor-btn");
+          button.style.boxShadow = "";
+          button.style.transform = "";
+          button.style.transition = "";
 
-        // Make the cursor slightly see-through when hovering
-        opacity.set(0.85);
+          // Remove fill elements
+          const fill = button.querySelector(".btn-fill");
+          if (fill) fill.remove();
+        }
+      });
+    };
+  }, [buttonFillColor]);
 
-        // We'll let the cursor stay with the mouse for a more natural feel
+  // Handle mouse movement with optimized animation frame
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      lastMousePosRef.current = { x: e.clientX, y: e.clientY };
+
+      if (rafIdRef.current === null) {
+        rafIdRef.current = requestAnimationFrame(updateCursorPosition);
+      }
+
+      // Only update visibility if needed
+      if (!isVisible && !isHoveringButton) {
+        setIsVisible(true);
       }
     };
 
-    updateTargetRect();
-
-    // Update on scroll and resize
-    window.addEventListener("resize", updateTargetRect);
-    window.addEventListener("scroll", updateTargetRect);
-
-    return () => {
-      window.removeEventListener("resize", updateTargetRect);
-      window.removeEventListener("scroll", updateTargetRect);
+    const updateCursorPosition = () => {
+      setPosition(lastMousePosRef.current);
+      rafIdRef.current = null;
     };
-  }, [
-    targetElement,
-    cursorState,
-    mousePosition,
-    scale,
-    scaleX,
-    scaleY,
-    borderRadius,
-    opacity,
-  ]);
+
+    const handleMouseDown = () => {
+      isMouseDownRef.current = true;
+    };
+
+    const handleMouseUp = () => {
+      isMouseDownRef.current = false;
+    };
+
+    const handleMouseLeave = () => {
+      setIsVisible(false);
+    };
+
+    const handleMouseEnter = () => {
+      setIsVisible(!isHoveringButton);
+    };
+
+    // Handle click for ripple effect
+    const handleClick = (e: MouseEvent) => {
+      if (!enableRipple) return;
+
+      const now = Date.now();
+      // Prevent creating too many ripples in quick succession
+      if (now - lastClickTimeRef.current < 150) return;
+      lastClickTimeRef.current = now;
+
+      const rippleId = `ripple-${Date.now()}-${rippleCounterRef.current++}`;
+      const rippleSize = Math.random() * 20 + 40; // Random size between 40-60px
+
+      // Add a new ripple
+      setRipples((prevRipples) => [
+        ...prevRipples,
+        { id: rippleId, x: e.clientX, y: e.clientY, size: rippleSize },
+      ]);
+
+      // Remove the ripple after animation completes
+      setTimeout(() => {
+        setRipples((prevRipples) =>
+          prevRipples.filter((r) => r.id !== rippleId)
+        );
+      }, 1000);
+    };
+
+    // Add event listeners
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("click", handleClick);
+
+    // Add button hover events
+    const onButtonHover = (e: Event) => {
+      const button = e.currentTarget as HTMLElement;
+
+      // Track this button as active
+      activeButtonsRef.current.add(button);
+      setIsHoveringButton(true);
+
+      // Apply morph animation
+      morphCursorToButton(button);
+    };
+
+    const onButtonUnhover = (e: Event) => {
+      const button = e.currentTarget as HTMLElement;
+
+      // Remove from active buttons
+      activeButtonsRef.current.delete(button);
+
+      // Only set isHoveringButton to false if no other buttons are being hovered
+      if (activeButtonsRef.current.size === 0) {
+        setIsHoveringButton(false);
+      }
+
+      // Reset button styles
+      resetButtonStyles(button);
+
+      // Restore cursor if no more buttons are being hovered
+      if (activeButtonsRef.current.size === 0) {
+        restoreCursor();
+      }
+    };
+
+    // Apply hover effects to all buttons
+    const buttons = document.querySelectorAll(".cursor-btn");
+    buttons.forEach((button) => {
+      button.addEventListener("mouseenter", onButtonHover);
+      button.addEventListener("mouseleave", onButtonUnhover);
+    });
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("click", handleClick);
+
+      buttons.forEach((button) => {
+        button.removeEventListener("mouseenter", onButtonHover);
+        button.removeEventListener("mouseleave", onButtonUnhover);
+      });
+
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, [isHoveringButton, isVisible, enableRipple]);
+
+  // Function to morph cursor to button
+  const morphCursorToButton = (button: HTMLElement) => {
+    // Get the button's fill element
+    const fill = button.querySelector(".btn-fill") as HTMLElement;
+    if (fill) {
+      // Get button dimensions and position
+      const rect = button.getBoundingClientRect();
+
+      // Set the transform origin to cursor position
+      const x = position.x - rect.left;
+      const y = position.y - rect.top;
+
+      fill.style.transformOrigin = `${x}px ${y}px`;
+      fill.style.transform = "scale(3)";
+      fill.style.transition =
+        "transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+      // Add subtle glow effect
+      button.style.boxShadow = `0 0 15px ${color}80`;
+      button.style.transition = "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)";
+    }
+
+    // Animate cursor to morph and disappear
+    if (cursorRef.current) {
+      const rect = button.getBoundingClientRect();
+      const buttonCenterX = rect.left + rect.width / 2;
+      const buttonCenterY = rect.top + rect.height / 2;
+
+      // Smooth morph animation
+      cursorRef.current.style.transform = `translate(${
+        buttonCenterX - size / 2
+      }px, ${buttonCenterY - size / 2}px) scale(0)`;
+      cursorRef.current.style.opacity = "0";
+      cursorRef.current.style.transition =
+        "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease";
+    }
+  };
+
+  // Function to reset button styles
+  const resetButtonStyles = (button: HTMLElement) => {
+    const fill = button.querySelector(".btn-fill") as HTMLElement;
+    if (fill) {
+      fill.style.transition =
+        "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+      fill.style.transform = "scale(0)";
+    }
+
+    // Remove the glow
+    button.style.boxShadow = "none";
+  };
+
+  // Function to restore cursor after button unhover
+  const restoreCursor = () => {
+    if (cursorRef.current) {
+      const halfSize = size / 2;
+      cursorRef.current.style.transform = `translate(${
+        position.x - halfSize
+      }px, ${position.y - halfSize}px) scale(1)`;
+      cursorRef.current.style.opacity = "1";
+      cursorRef.current.style.transition =
+        "transform 0.3s ease-out, opacity 0.2s ease";
+    }
+  };
+
+  // Update cursor position when position changes
+  useEffect(() => {
+    if (cursorRef.current && !isHoveringButton) {
+      const halfSize = size / 2;
+      cursorRef.current.style.transform = `translate(${
+        position.x - halfSize
+      }px, ${position.y - halfSize}px) scale(1)`;
+    }
+  }, [position, size, isHoveringButton]);
 
   return (
-    <CursorContext.Provider
-      value={{
-        cursorState,
-        setCursorState,
-        targetElement,
-        setTargetElement,
-        cursorColor,
-        setCursorColor,
-      }}
-    >
-      {children}
-
-      {/* Custom Cursor with spring animations for squishy effect */}
-      <motion.div
+    <>
+      {/* Cursor */}
+      <div
         ref={cursorRef}
-        className="fixed pointer-events-none z-50"
+        className="fixed top-0 left-0 pointer-events-none z-50 flex items-center justify-center"
         style={{
-          left: 0,
-          top: 0,
-          x: cursorX,
-          y: cursorY,
-          scale,
-          scaleX,
-          scaleY,
-          opacity,
-          transformOrigin: "center center",
-          transform: "translate(-50%, -50%)",
+          opacity: isVisible ? 1 : 0,
+          width: `${size}px`,
+          height: `${size}px`,
+          transition: "opacity 0.3s ease, transform 0.2s ease",
         }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2 }}
       >
-        {/* Outermost teal scalloped edge */}
-        <motion.div
+        {/* Outer glow */}
+        <div
+          className="absolute rounded-full blur-md"
+          style={{
+            backgroundColor: color,
+            width: "140%",
+            height: "140%",
+            opacity: 0.3,
+            animation: "cursorPulse 2s ease-in-out infinite",
+          }}
+        />
+
+        {/* Main circle */}
+        <div
+          className="rounded-full"
+          style={{
+            backgroundColor: `${color}cc`,
+            width: "100%",
+            height: "100%",
+            opacity: 0.7,
+            boxShadow: `0 0 20px ${color}80`,
+            animation: "cursorPulse 2s ease-in-out infinite",
+            animationDelay: "0.1s",
+          }}
+        />
+
+        {/* Inner circle */}
+        {/* <div
           className="absolute rounded-full"
           style={{
-            width: "80px",
-            height: "80px",
-            backgroundColor: cursorColor,
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius,
-            zIndex: -3,
-            mixBlendMode:
-              "var(--cursor-blend-mode, normal)" as unknown as MixBlendMode,
+            backgroundColor: "#ffffff",
+            width: "30%",
+            height: "30%",
+            opacity: 0.9,
+            boxShadow: `0 0 10px ${color}`,
           }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        />
+        /> */}
+      </div>
 
-        {/* White middle circle with pattern */}
-        <motion.div
-          className="absolute rounded-full"
-          style={{
-            width: "60px",
-            height: "60px",
-            backgroundColor: "#e2e8f0",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius,
-            zIndex: -2,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 180,
-            damping: 20,
-            delay: 0.05,
-          }}
-        />
-
-        {/* Inner detail circle */}
-        <motion.div
-          className="absolute rounded-full"
-          style={{
-            width: "42px",
-            height: "42px",
-            border: "1px solid #718096",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius,
-            zIndex: -1,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 160,
-            damping: 15,
-            delay: 0.1,
-          }}
-        />
-
-        {/* Teal inner circle  */}
-        <motion.div
-          className="absolute rounded-full flex items-center justify-center"
-          style={{
-            width: "32px",
-            height: "32px",
-            backgroundColor: cursorColor,
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius,
-            mixBlendMode:
-              "var(--cursor-blend-mode, normal)" as unknown as MixBlendMode,
-            zIndex: 1,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 140,
-            damping: 15,
-            delay: 0.15,
-          }}
-        />
-      </motion.div>
-
-      {/* Render click ripples */}
-      {clickRipples.map((ripple) => (
-        <motion.div
-          key={ripple.id}
-          className="fixed pointer-events-none z-40"
-          style={{
-            left: ripple.x,
-            top: ripple.y,
-            transform: "translate(-50%, -50%)",
-          }}
-          initial={{ width: 0, height: 0, opacity: 0.8 }}
-          animate={{
-            width: 100,
-            height: 100,
-            opacity: 0,
-          }}
-          transition={{
-            duration: 0.6,
-            ease: "easeOut",
-          }}
-        >
+      {/* Ripple container */}
+      <div
+        ref={rippleContainerRef}
+        className="fixed inset-0 pointer-events-none z-40"
+      >
+        {ripples.map((ripple) => (
           <div
-            className="w-full h-full rounded-full"
+            key={ripple.id}
+            className="absolute rounded-full pointer-events-none ripple-effect"
             style={{
-              background: `radial-gradient(circle, rgba(79,209,197,0.6) 0%, rgba(79,209,197,0) 70%)`,
-              border: `2px solid rgba(79,209,197,0.5)`,
+              left: ripple.x - ripple.size / 2,
+              top: ripple.y - ripple.size / 2,
+              width: `${ripple.size}px`,
+              height: `${ripple.size}px`,
+              border: `2px solid ${color}`,
+              boxShadow: `0 0 15px ${color}80`,
+              animation:
+                "ripple-effect 1s cubic-bezier(0.2, 0.6, 0.4, 1) forwards",
             }}
           />
-        </motion.div>
-      ))}
-    </CursorContext.Provider>
+        ))}
+      </div>
+    </>
   );
 };
+
+export default CustomCursor;

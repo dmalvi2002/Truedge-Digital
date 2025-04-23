@@ -449,19 +449,6 @@ const CustomCursor: React.FC<CustomCursorProps> = ({
             animationDelay: "0.1s",
           }}
         />
-
-        {/* Inner circle - positioned exactly at mouse cursor position */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            backgroundColor: "#ffffff",
-            width: `${innerCircleSize}%`,
-            height: `${innerCircleSize}%`,
-            opacity: isMouseDownRef.current ? 0.9 : 0.6,
-            boxShadow: `0 0 10px ${color}`,
-            transition: "opacity 0.2s ease",
-          }}
-        />
       </div>
 
       {/* Ripple container */}
