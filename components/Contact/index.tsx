@@ -245,11 +245,11 @@ const ContactSection = () => {
       id="contact"
     >
       {/* Particles background */}
-      <div
+      {/* <div
         ref={particlesRef}
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
-      />
+      /> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">

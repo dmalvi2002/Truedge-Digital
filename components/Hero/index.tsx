@@ -1,7 +1,7 @@
 "use client";
 import { FaLocationArrow } from "react-icons/fa6";
 import { motion } from "framer-motion";
-import MagicButton from "@/components/ui/MagicButton";
+import MagicButton from "@/components/ui/CustomMagicButton";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { TextGenerateEffect } from "@/components/ui/TextGenerateEffect";
 import HeroGlobe from "@/components/Hero/HeroClientGlobe";
@@ -69,7 +69,10 @@ const Hero = () => {
             >
               <MagicButton
                 handleClick={() => {
-                  window.location.href = "/#about";
+                  const aboutSection = document.getElementById("contact");
+                  if (aboutSection) {
+                    aboutSection.scrollIntoView({ behavior: "smooth" });
+                  }
                 }}
                 title="Get in touch"
                 icon={<FaLocationArrow />}
