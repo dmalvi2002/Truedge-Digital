@@ -8,7 +8,7 @@ export const navItems = [
     logo: false,
     img: "/icons/projects.svg",
   },
-  { name: "Home", link: "/", logo: true, img: "/logo.svg" },
+  { name: "Home", link: "/", logo: true, img: "/truedge-icon.svg" },
   {
     name: "Services",
     link: "/services",
