@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin"; // Import MotionPathPlugin
-import GraffitiBackground from "./ui/GraffitiBackground";
+// import GraffitiBackground from "./ui/GraffitiBackground";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -355,7 +355,7 @@ const CombinedSections = () => {
       ref={containerRef}
       className="relative flex justify-center items-center flex-col overflow-hidden bg-gradient-to-b from-[#141217] to-[#0c0a0f] min-h-screen"
     >
-      <GraffitiBackground />
+      {/* <GraffitiBackground /> */}
 
       {/* Rocket */}
       <div ref={rocketRef}>

@@ -42,6 +42,75 @@ const GraffitiBackground = () => {
     setIsClient(true);
   }, []);
 
+  // Generate pre-calculated fixed particles data
+  const particlesData = React.useMemo(() => {
+    const particles = [];
+    for (let i = 0; i < 10; i++) {
+      particles.push({
+        width: (seededRandom() * 15 + 5).toFixed(2),
+        height: (seededRandom() * 15 + 5).toFixed(2),
+        backgroundColor: `hsla(${(seededRandom() * 360).toFixed(
+          2
+        )}, 100%, 70%, 0.6)`,
+        borderRadius: "50%",
+        top: `${(seededRandom() * 100).toFixed(2)}%`,
+        left: `${(seededRandom() * 100).toFixed(2)}%`,
+        boxShadow: `0 0 5px hsla(${(seededRandom() * 360).toFixed(
+          2
+        )}, 100%, 70%, 0.8)`,
+      });
+    }
+    return particles;
+  }, []);
+
+  // Create particles with pre-computed values
+  const createParticles = (): React.ReactNode[] => {
+    return particlesData.map((particle, i) => (
+      <div
+        key={`particle-${i}`}
+        className="particle absolute"
+        style={{
+          width: `${particle.width}px`,
+          height: `${particle.height}px`,
+          backgroundColor: particle.backgroundColor,
+          borderRadius: particle.borderRadius,
+          filter: "blur(1px)",
+          top: particle.top,
+          left: particle.left,
+          boxShadow: particle.boxShadow,
+        }}
+      />
+    ));
+  };
+
+  // Create graffiti characters
+  const createCharacters = () => {
+    const characters = [
+      { shape: "M5,20 L15,5 L25,20 Z", color: "#ff2a6d" }, // Triangle
+      { shape: "M5,5 L25,5 L25,25 L5,25 Z", color: "#05d9e8" }, // Square
+      { shape: "M15,5 L25,15 L15,25 L5,15 Z", color: "#ffd319" }, // Diamond
+      { shape: "M15,5 A10,10 0 1,1 15,25 A10,10 0 1,1 15,5", color: "#d1f7ff" }, // Circle
+    ];
+
+    return characters.map((char, i) => (
+      <div
+        key={`char-${i}`}
+        className="graffiti-character absolute"
+        style={{
+          width: "30px",
+          height: "30px",
+          top: `${20 + i * 15}%`,
+          left: `${15 + i * 20}%`,
+          zIndex: 10,
+        }}
+      >
+        <svg width="100%" height="100%" viewBox="0 0 30 30">
+          <path d={char.shape} fill={char.color} />
+        </svg>
+      </div>
+    ));
+  };
+
   useEffect(() => {
     if (!isClient) return;
 
@@ -172,38 +241,21 @@ const GraffitiBackground = () => {
       });
     });
 
-    // 3. Particles floating effect with scroll acceleration
-    particleElements.forEach((particle, index) => {
-      // Base floating animation
-      gsap.to(particle, {
-        x: `random(-100, 100)`,
-        y: `random(-100, 100)`,
-        rotation: `random(-180, 180)`,
-        repeat: -1,
-        yoyo: true,
-        duration: 3 + (index % 5),
-        ease: "sine.inOut",
+    // Simplified particle floating animation
+    if (particles) {
+      const particleElements = particles.querySelectorAll(".particle");
+      particleElements.forEach((particle, index) => {
+        gsap.to(particle, {
+          x: `random(-50, 50)`,
+          y: `random(-50, 50)`,
+          rotation: `random(-90, 90)`,
+          repeat: -1,
+          yoyo: true,
+          duration: 2 + (index % 3),
+          ease: "sine.inOut",
+        });
       });
-
-      // Scroll-based acceleration
-      ScrollTrigger.create({
-        trigger: document.body,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.5,
-        onUpdate: (self) => {
-          // Speed up particles when scrolling faster
-          const velocity = Math.abs(self.getVelocity() / 2000);
-          const cappedVelocity = Math.min(velocity, 5);
-          gsap.to(particle, {
-            duration: 0.1,
-            scale: 0.8 + cappedVelocity * 0.2,
-            opacity: 0.5 + cappedVelocity * 0.1,
-            ease: "none",
-          });
-        },
-      });
-    });
+    }
 
     // 4. Final scene animation at the end of scroll
     const endSceneTl = gsap.timeline({
@@ -381,82 +433,10 @@ const GraffitiBackground = () => {
     };
   }, [hasInteracted, isClient]);
 
-  // Generate pre-calculated fixed particles data
-  const particlesData = React.useMemo(() => {
-    const particles = [];
-    for (let i = 0; i < 30; i++) {
-      particles.push({
-        width: (seededRandom() * 20 + 5).toFixed(2),
-        height: (seededRandom() * 20 + 5).toFixed(2),
-        backgroundColor: `hsla(${(seededRandom() * 360).toFixed(
-          2
-        )}, 100%, 70%, 0.6)`,
-        borderRadius:
-          seededRandom() > 0.5
-            ? "50%"
-            : `${(seededRandom() * 5 + 2).toFixed(2)}px`,
-        top: `${(seededRandom() * 100).toFixed(2)}%`,
-        left: `${(seededRandom() * 100).toFixed(2)}%`,
-        boxShadow: `0 0 10px hsla(${(seededRandom() * 360).toFixed(
-          2
-        )}, 100%, 70%, 0.8)`,
-      });
-    }
-    return particles;
-  }, []);
-
-  // Create particles with pre-computed values
-  const createParticles = (): React.ReactNode[] => {
-    return particlesData.map((particle, i) => (
-      <div
-        key={`particle-${i}`}
-        className="particle absolute"
-        style={{
-          width: `${particle.width}px`,
-          height: `${particle.height}px`,
-          backgroundColor: particle.backgroundColor,
-          borderRadius: particle.borderRadius,
-          filter: "blur(1px)",
-          top: particle.top,
-          left: particle.left,
-          boxShadow: particle.boxShadow,
-        }}
-      />
-    ));
-  };
-
-  // Create graffiti characters
-  const createCharacters = () => {
-    const characters = [
-      { shape: "M5,20 L15,5 L25,20 Z", color: "#ff2a6d" }, // Triangle
-      { shape: "M5,5 L25,5 L25,25 L5,25 Z", color: "#05d9e8" }, // Square
-      { shape: "M15,5 L25,15 L15,25 L5,15 Z", color: "#ffd319" }, // Diamond
-      { shape: "M15,5 A10,10 0 1,1 15,25 A10,10 0 1,1 15,5", color: "#d1f7ff" }, // Circle
-    ];
-
-    return characters.map((char, i) => (
-      <div
-        key={`char-${i}`}
-        className="graffiti-character absolute"
-        style={{
-          width: "30px",
-          height: "30px",
-          top: `${20 + i * 15}%`,
-          left: `${15 + i * 20}%`,
-          zIndex: 10,
-        }}
-      >
-        <svg width="100%" height="100%" viewBox="0 0 30 30">
-          <path d={char.shape} fill={char.color} />
-        </svg>
-      </div>
-    ));
-  };
-
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
+      className="fixed inset-0 w-full h-full pointer-events-none z-10"
       style={{
         mixBlendMode: "overlay",
         perspective: "1000px",

@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 // import PageGridBackground from "@/components/ui/AnimatedGridBackground";
 import AnimatedGrid from "@/components/ui/AnimatedGrid";
 import CustomCursor from "./utils/CustomCursor";
+import GraffitiBackground from "@/components/ui/GraffitiBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
         {/* Add the animated grid background */}
         {/* <PageGridBackground opacity={0.2} /> */}
         <AnimatedGrid />
+        <GraffitiBackground />
         <CustomCursor
           color="#6d28d9" // Purple color
           size={50} // Larger size
