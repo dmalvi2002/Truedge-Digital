@@ -9,6 +9,7 @@ const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
 import { cn } from "@/lib/utils";
 import { BackgroundGradientAnimation } from "../ui/GradientBg";
+import { PinkBGAnimation } from "../ui/PinkBGAnimation";
 import GridGlobe from "./GridGlobe";
 import animationData from "@/data/confetti.json";
 import MagicButton from "../ui/MagicButton";
@@ -118,9 +119,9 @@ export const BentoGridItem = ({
         </div>
         {id === 6 && (
           // add background animation , remove the p tag
-          <BackgroundGradientAnimation>
+          <PinkBGAnimation>
             <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl"></div>
-          </BackgroundGradientAnimation>
+          </PinkBGAnimation>
         )}
 
         <div
@@ -142,7 +143,11 @@ export const BentoGridItem = ({
           </div>
 
           {/* for the github 3d globe */}
-          {id === 2 && <ClientGlobe />}
+          {id === 2 && (
+            <BackgroundGradientAnimation>
+              <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl"></div>
+            </BackgroundGradientAnimation>
+          )}
 
           {/* Tech stack list div */}
           {id === 3 && (

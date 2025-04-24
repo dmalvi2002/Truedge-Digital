@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-export const BackgroundGradientAnimation = ({
+export const PinkBGAnimation = ({
   gradientBackgroundStart = "rgb(108, 0, 162)",
   gradientBackgroundEnd = "rgb(0, 17, 82)",
   firstColor = "18, 113, 255",
@@ -12,8 +12,8 @@ export const BackgroundGradientAnimation = ({
   fourthColor = "200, 50, 50",
   fifthColor = "180, 180, 50",
   pointerColor = "140, 100, 255",
-  sunColor = "255, 165, 0", // Orange color for the sun
-  sunGlowColor = "255, 215, 0", // Golden glow
+  moonColor = "230, 230, 250", // Orange color for the sun
+  moonGlowColor = "220, 220, 255", // Golden glow
   size = "80%",
   blendingValue = "hard-light",
   children,
@@ -29,8 +29,8 @@ export const BackgroundGradientAnimation = ({
   fourthColor?: string;
   fifthColor?: string;
   pointerColor?: string;
-  sunColor?: string;
-  sunGlowColor?: string;
+  moonColor?: string;
+  moonGlowColor?: string;
   size?: string;
   blendingValue?: string;
   children?: React.ReactNode;
@@ -60,8 +60,8 @@ export const BackgroundGradientAnimation = ({
     document.body.style.setProperty("--fourth-color", fourthColor);
     document.body.style.setProperty("--fifth-color", fifthColor);
     document.body.style.setProperty("--pointer-color", pointerColor);
-    document.body.style.setProperty("--sun-color", sunColor);
-    document.body.style.setProperty("--sun-glow-color", sunGlowColor);
+    document.body.style.setProperty("--moon-color", moonColor);
+    document.body.style.setProperty("--moon-glow-color", moonGlowColor);
     document.body.style.setProperty("--size", size);
     document.body.style.setProperty("--blending-value", blendingValue);
   }, []);
@@ -99,24 +99,24 @@ export const BackgroundGradientAnimation = ({
       transition: {
         x: {
           repeat: Infinity,
-          duration: 30,
+          duration: 45, // Increased from 30
           ease: "easeInOut",
           repeatType: "reverse",
         },
         y: {
           repeat: Infinity,
-          duration: 25,
+          duration: 40, // Increased from 25
           ease: "easeInOut",
           repeatType: "reverse",
         },
         scale: {
           repeat: Infinity,
-          duration: 8,
+          duration: 12, // Increased from 8
           ease: "easeInOut",
         },
         rotate: {
           repeat: Infinity,
-          duration: 12,
+          duration: 18, // Increased from 12
           ease: "easeInOut",
         },
       },
@@ -126,17 +126,17 @@ export const BackgroundGradientAnimation = ({
   // Animation variants for the sun's glow
   const glowVariants = {
     animate: {
-      opacity: [0.6, 0.8, 0.6, 0.7, 0.6],
-      scale: [1, 1.2, 1, 1.1, 1],
+      opacity: [0.6, 0.75, 0.6, 0.7, 0.6],
+      scale: [1, 1.15, 1, 1.08, 1],
       transition: {
         opacity: {
           repeat: Infinity,
-          duration: 4,
+          duration: 7, // Slower opacity changes
           ease: "easeInOut",
         },
         scale: {
           repeat: Infinity,
-          duration: 5,
+          duration: 8, // Slower scale changes
           ease: "easeInOut",
         },
       },
@@ -161,11 +161,11 @@ export const BackgroundGradientAnimation = ({
       >
         {/* Outer glow */}
         <motion.div
-          className="absolute w-full h-full rounded-full bg-yellow-500 blur-2xl"
+          className="absolute w-full h-full rounded-full bg-blue-500 blur-2xl"
           style={{
-            backgroundColor: `rgba(var(--sun-glow-color), 0.3)`,
-            boxShadow: `0 0 60px 30px rgba(var(--sun-glow-color), 0.5),
-                         0 0 100px 60px rgba(var(--sun-glow-color), 0.3)`,
+            backgroundColor: `rgba(var(--moon-glow-color), 0.3)`,
+            boxShadow: `0 0 60px 30px rgba(var(--moon-glow-color), 0.5),
+                         0 0 100px 60px rgba(var(--moon-glow-color), 0.3)`,
           }}
           variants={glowVariants}
         />
@@ -175,10 +175,10 @@ export const BackgroundGradientAnimation = ({
           className="absolute w-full h-full rounded-full"
           style={{
             background: `radial-gradient(circle at center,
-                          rgba(var(--sun-glow-color), 0.9) 0%,
-                          rgba(var(--sun-color), 0.8) 60%,
-                          rgba(var(--sun-color), 0.6) 100%)`,
-            boxShadow: `0 0 20px 10px rgba(var(--sun-color), 0.6)`,
+                          rgba(var(--moon-glow-color), 0.9) 0%,
+                          rgba(var(--moon-color), 0.8) 60%,
+                          rgba(var(--moon-color), 0.6) 100%)`,
+            boxShadow: `0 0 20px 10px rgba(var(--moon-color), 0.6)`,
           }}
         />
       </motion.div>
