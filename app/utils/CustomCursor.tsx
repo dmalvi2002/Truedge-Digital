@@ -63,6 +63,17 @@ const CustomCursor: React.FC<CustomCursorProps> = ({
     };
   }, [disableOnMobile]);
 
+  // Add a periodic check to ensure the cursor is visible
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!isVisible && !isMobile && !disableOnMobile) {
+        setIsVisible(true);
+      }
+    }, 1000); // Check every second
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [isVisible, isMobile, disableOnMobile]);
+
   // Initialize and clean up button styles
   useEffect(() => {
     // Don't set up if on mobile and disableOnMobile is true
@@ -403,10 +414,6 @@ const CustomCursor: React.FC<CustomCursorProps> = ({
   if (isMobile && disableOnMobile) {
     return null;
   }
-
-  // Calculate the inner circle offset to position it exactly at the mouse position
-  // We need to offset it since the inner circle is positioned relative to the cursor
-  const innerCircleOffset = (size * (1 - innerCircleSize / 100)) / 2;
 
   return (
     <>
