@@ -826,17 +826,17 @@ const ContactSection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     whileHover={{ y: -5 }}
-                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm"
+                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm flex flex-col h-full"
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-3 flex items-center justify-center">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-3 flex-shrink-0 w-12 h-12 flex items-center justify-center">
                         {item.icon}
                       </div>
-                      <div>
-                        <h3 className="font-bold text-gray-200 text-lg mb-1">
+                      <div className="flex flex-col justify-center min-w-0 flex-1">
+                        <h3 className="font-bold text-gray-200 text-lg mb-1 truncate">
                           {item.title}
                         </h3>
-                        <p className="text-indigo-300/90 font-medium">
+                        <p className="text-indigo-300/90 font-medium text-md overflow-hidden text-ellipsis break-all">
                           {item.content}
                         </p>
                       </div>
