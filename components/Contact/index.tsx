@@ -442,7 +442,7 @@ const ContactSection = () => {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                    className="w-20 h-20 bg-indigo-100 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-6"
                   >
                     <svg
                       className="w-10 h-10"
@@ -461,7 +461,7 @@ const ContactSection = () => {
                   <h3 className="text-2xl font-bold text-gray-100 mb-2">
                     Thank you!
                   </h3>
-                  <p className="text-gray-200 mb-6">
+                  <p className="text-gray-300 mb-6">
                     Your message has been sent successfully. We'll get back to
                     you soon.
                   </p>
@@ -506,9 +506,9 @@ const ContactSection = () => {
                           updatedFields[index].focused = false;
                           setFormFields(updatedFields);
                         }}
-                        className={`block w-full px-4 py-3 rounded-lg border ${
-                          field.error ? "border-red-500" : "border-gray-300"
-                        } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
+                        className={`block w-full px-4 py-3 rounded-lg bg-slate-800/70 text-white border ${
+                          field.error ? "border-red-500" : "border-slate-600"
+                        } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400`}
                         placeholder={`Your ${
                           field.name.charAt(0).toUpperCase() +
                           field.name.slice(1)
@@ -518,7 +518,7 @@ const ContactSection = () => {
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="mt-1 text-sm text-red-600"
+                          className="mt-1 text-sm text-red-400"
                         >
                           {field.error}
                         </motion.p>
@@ -539,7 +539,7 @@ const ContactSection = () => {
                       </h3>
                       <a
                         href="/services"
-                        className="text-indigo-400 hover:text-indigo-300 flex items-center transition-colors duration-300 text-sm font-medium"
+                        className="text-indigo-400 rounded-2xl p-2 hover:text-indigo-300 flex items-center transition-colors duration-300 text-sm font-medium"
                       >
                         See all services
                         <svg
@@ -673,7 +673,7 @@ const ContactSection = () => {
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-3 text-sm text-red-500 bg-red-500/10 p-2 rounded-md border border-red-500/30"
+                        className="mt-3 text-sm text-red-400 bg-red-500/10 p-2 rounded-md border border-red-500/30"
                       >
                         <div className="flex items-center">
                           <svg
@@ -721,18 +721,18 @@ const ContactSection = () => {
                         updatedFields[2].focused = false;
                         setFormFields(updatedFields);
                       }}
-                      className={`block w-full px-4 py-3 rounded-lg border ${
+                      className={`block w-full px-4 py-3 rounded-lg bg-slate-800/70 text-white border ${
                         formFields[2].error
                           ? "border-red-500"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
+                          : "border-slate-600"
+                      } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400`}
                       placeholder="Your Message"
                     />
                     {formFields[2].error && (
                       <motion.p
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-1 text-sm text-red-600"
+                        className="mt-1 text-sm text-red-400"
                       >
                         {formFields[2].error}
                       </motion.p>
@@ -818,31 +818,35 @@ const ContactSection = () => {
               }}
             >
               {/* Contact Info Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {contactInfo.map((item, index) => (
                   <motion.div
                     key={index}
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    whileHover={{
-                      y: -5,
-                      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-                    }}
-                    className="bg-slate-500/50 p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm"
                   >
-                    <div className="flex items-center">
-                      <div className="rounded-full bg-slate-900 text-indigo-600 p-3 mr-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-3 flex items-center justify-center">
                         {item.icon}
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-300">
+                        <h3 className="font-bold text-gray-200 text-lg mb-1">
                           {item.title}
                         </h3>
-                        <p className="text-gray-400">{item.content}</p>
+                        <p className="text-indigo-300/90 font-medium">
+                          {item.content}
+                        </p>
                       </div>
                     </div>
+                    <motion.div
+                      className="w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent mt-4 rounded-full"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    />
                   </motion.div>
                 ))}
               </div>
