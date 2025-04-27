@@ -19,13 +19,51 @@ type FormField = {
   focused?: boolean;
 };
 
+// Package options
+type PackageOption = {
+  id: string;
+  name: string;
+  subpackages: { id: string; name: string }[];
+};
+
+// Selected package type
+type SelectedPackages = {
+  [key: string]: string; // packageId -> selected subpackage id
+};
+
 const ContactSection = () => {
+  // Package data
+  const packageOptions: PackageOption[] = [
+    {
+      id: "web-development",
+      name: "Web Development",
+      subpackages: [
+        { id: "web-basic", name: "Basic Package" },
+        { id: "web-standard", name: "Standard Package" },
+        { id: "web-premium", name: "Premium Package" },
+      ],
+    },
+    {
+      id: "seo-marketing",
+      name: "SEO & Digital Marketing",
+      subpackages: [
+        { id: "seo-basic", name: "Basic Package" },
+        { id: "seo-premium", name: "Premium Package" },
+      ],
+    },
+  ];
+
   // Form state
   const [formFields, setFormFields] = useState<FormField[]>([
     { name: "name", value: "", error: "" },
     { name: "email", value: "", error: "" },
     { name: "message", value: "", error: "" },
   ]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedPackages, setSelectedPackages] = useState<SelectedPackages>(
+    {}
+  );
+  const [packageError, setPackageError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -81,51 +119,47 @@ const ContactSection = () => {
       title: "Email",
       content: "contact@example.com",
     },
-    // {
-    //   icon: (
-    //     <svg
-    //       className="w-6 h-6"
-    //       fill="none"
-    //       stroke="currentColor"
-    //       viewBox="0 0 24 24"
-    //     >
-    //       <path
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //         strokeWidth="2"
-    //         d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-    //       />
-    //       <path
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //         strokeWidth="2"
-    //         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-    //       />
-    //     </svg>
-    //   ),
-    //   title: "Address",
-    //   content: "123 Innovation St, Tech City",
-    // },
-    // {
-    //   icon: (
-    //     <svg
-    //       className="w-6 h-6"
-    //       fill="none"
-    //       stroke="currentColor"
-    //       viewBox="0 0 24 24"
-    //     >
-    //       <path
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //         strokeWidth="2"
-    //         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-    //       />
-    //     </svg>
-    //   ),
-    //   title: "Hours",
-    //   content: "Mon-Fri: 9AM - 6PM",
-    // },
   ];
+
+  // Handle service checkbox selection
+  const handleServiceToggle = (serviceId: string, checked: boolean) => {
+    if (checked) {
+      // Add service if not already included
+      if (!selectedServices.includes(serviceId)) {
+        setSelectedServices([...selectedServices, serviceId]);
+      }
+    } else {
+      // Remove service if unchecked
+      setSelectedServices(selectedServices.filter((id) => id !== serviceId));
+
+      // Also remove any selected packages for this service
+      const updatedPackages = { ...selectedPackages };
+      delete updatedPackages[serviceId];
+      setSelectedPackages(updatedPackages);
+    }
+
+    if (packageError) setPackageError("");
+  };
+
+  // Handle subpackage radio selection
+  const handlePackageSelect = (serviceId: string, packageId: string) => {
+    setSelectedPackages({
+      ...selectedPackages,
+      [serviceId]: packageId,
+    });
+
+    if (packageError) setPackageError("");
+  };
+
+  // Check if a service is selected
+  const isServiceSelected = (serviceId: string) => {
+    return selectedServices.includes(serviceId);
+  };
+
+  // Check if a package is selected
+  const isPackageSelected = (serviceId: string, packageId: string) => {
+    return selectedPackages[serviceId] === packageId;
+  };
 
   // Initialize GSAP animations
   useEffect(() => {
@@ -258,6 +292,22 @@ const ContactSection = () => {
       isValid = false;
     }
 
+    // Validate service selection
+    if (selectedServices.length === 0) {
+      setPackageError("Please select at least one service");
+      isValid = false;
+    } else {
+      // Check if selected services have a package selected
+      const missingPackageSelection = selectedServices.some(
+        (serviceId) => !selectedPackages[serviceId]
+      );
+
+      if (missingPackageSelection) {
+        setPackageError("Please select a package for each selected service");
+        isValid = false;
+      }
+    }
+
     setFormFields(updatedFields);
     return isValid;
   };
@@ -268,6 +318,33 @@ const ContactSection = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+
+    // Prepare selected services information for submission
+    const selectedServicesInfo = selectedServices.map((serviceId) => {
+      const serviceOption = packageOptions.find((p) => p.id === serviceId);
+      const serviceName = serviceOption?.name || "";
+
+      const selectedPackageId = selectedPackages[serviceId];
+      const selectedPackageInfo = serviceOption?.subpackages.find(
+        (sp) => sp.id === selectedPackageId
+      );
+      const packageName = selectedPackageInfo?.name || "";
+
+      return {
+        service: serviceName,
+        package: packageName,
+      };
+    });
+
+    // Prepare data for submission
+    const formData = {
+      name: formFields[0].value,
+      email: formFields[1].value,
+      message: formFields[2].value,
+      selectedServices: selectedServicesInfo,
+    };
+
+    console.log("Submitting form data:", formData);
 
     // Simulate API call
     try {
@@ -303,6 +380,9 @@ const ContactSection = () => {
       { name: "email", value: "", error: "" },
       { name: "message", value: "", error: "" },
     ]);
+    setSelectedServices([]);
+    setSelectedPackages({});
+    setPackageError("");
     setSubmitSuccess(false);
   };
 
@@ -324,6 +404,11 @@ const ContactSection = () => {
     }),
   };
 
+  const serviceVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   return (
     <div
       ref={contactSectionRef}
@@ -331,11 +416,11 @@ const ContactSection = () => {
       id="contact"
     >
       {/* Particles background */}
-      {/* <div
+      <div
         ref={particlesRef}
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
-      /> */}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
@@ -390,7 +475,8 @@ const ContactSection = () => {
                 </motion.div>
               ) : (
                 <>
-                  {formFields.map((field, index) => (
+                  {/* Name and Email Fields First */}
+                  {formFields.slice(0, 2).map((field, index) => (
                     <motion.div
                       key={field.name}
                       custom={index}
@@ -399,67 +485,35 @@ const ContactSection = () => {
                       variants={formFieldVariants}
                       className="relative"
                     >
-                      {field.name === "message" ? (
-                        <motion.textarea
-                          whileFocus="focus"
-                          animate={formFields[index].focused ? "focus" : "blur"}
-                          variants={inputVariants}
-                          id={field.name}
-                          name={field.name}
-                          value={field.value}
-                          rows={4}
-                          onChange={(e) =>
-                            handleInputChange(index, e.target.value)
-                          }
-                          onFocus={() => {
-                            const updatedFields = [...formFields];
-                            updatedFields[index].focused = true;
-                            setFormFields(updatedFields);
-                          }}
-                          onBlur={() => {
-                            const updatedFields = [...formFields];
-                            updatedFields[index].focused = false;
-                            setFormFields(updatedFields);
-                          }}
-                          className={`block w-full px-4 py-3 rounded-lg border ${
-                            field.error ? "border-red-500" : "border-gray-300"
-                          } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
-                          placeholder={`Your ${
-                            field.name.charAt(0).toUpperCase() +
-                            field.name.slice(1)
-                          }`}
-                        />
-                      ) : (
-                        <motion.input
-                          whileFocus="focus"
-                          animate={formFields[index].focused ? "focus" : "blur"}
-                          variants={inputVariants}
-                          type={field.name === "email" ? "email" : "text"}
-                          id={field.name}
-                          name={field.name}
-                          value={field.value}
-                          onChange={(e) =>
-                            handleInputChange(index, e.target.value)
-                          }
-                          onFocus={() => {
-                            const updatedFields = [...formFields];
-                            updatedFields[index].focused = true;
-                            setFormFields(updatedFields);
-                          }}
-                          onBlur={() => {
-                            const updatedFields = [...formFields];
-                            updatedFields[index].focused = false;
-                            setFormFields(updatedFields);
-                          }}
-                          className={`block w-full px-4 py-3 rounded-lg border ${
-                            field.error ? "border-red-500" : "border-gray-300"
-                          } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
-                          placeholder={`Your ${
-                            field.name.charAt(0).toUpperCase() +
-                            field.name.slice(1)
-                          }`}
-                        />
-                      )}
+                      <motion.input
+                        whileFocus="focus"
+                        animate={formFields[index].focused ? "focus" : "blur"}
+                        variants={inputVariants}
+                        type={field.name === "email" ? "email" : "text"}
+                        id={field.name}
+                        name={field.name}
+                        value={field.value}
+                        onChange={(e) =>
+                          handleInputChange(index, e.target.value)
+                        }
+                        onFocus={() => {
+                          const updatedFields = [...formFields];
+                          updatedFields[index].focused = true;
+                          setFormFields(updatedFields);
+                        }}
+                        onBlur={() => {
+                          const updatedFields = [...formFields];
+                          updatedFields[index].focused = false;
+                          setFormFields(updatedFields);
+                        }}
+                        className={`block w-full px-4 py-3 rounded-lg border ${
+                          field.error ? "border-red-500" : "border-gray-300"
+                        } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
+                        placeholder={`Your ${
+                          field.name.charAt(0).toUpperCase() +
+                          field.name.slice(1)
+                        }`}
+                      />
                       {field.error && (
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
@@ -471,6 +525,220 @@ const ContactSection = () => {
                       )}
                     </motion.div>
                   ))}
+
+                  {/* Service Selection */}
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={serviceVariants}
+                    className="relative bg-gradient-to-r from-slate-800/70 to-slate-900/70 rounded-xl p-6 shadow-inner border border-slate-700/50"
+                  >
+                    <div className="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
+                      <h3 className="text-lg font-medium text-white">
+                        Choose Your Services
+                      </h3>
+                      <a
+                        href="/services"
+                        className="text-indigo-400 hover:text-indigo-300 flex items-center transition-colors duration-300 text-sm font-medium"
+                      >
+                        See all services
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 ml-1"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+
+                    {/* Service options */}
+                    <div className="space-y-5">
+                      {packageOptions.map((packageOption) => (
+                        <div key={packageOption.id} className="space-y-3">
+                          {/* Main service checkbox - custom styled */}
+                          <div
+                            className={`flex items-center p-3.5 rounded-lg cursor-pointer transition-all duration-300 transform ${
+                              isServiceSelected(packageOption.id)
+                                ? "bg-indigo-600/30 border border-indigo-500 shadow-md scale-[1.01]"
+                                : "hover:bg-slate-700/50 border border-transparent hover:border-slate-600"
+                            }`}
+                            onClick={() =>
+                              handleServiceToggle(
+                                packageOption.id,
+                                !isServiceSelected(packageOption.id)
+                              )
+                            }
+                          >
+                            <div
+                              className={`w-5 h-5 flex-shrink-0 rounded-md flex items-center justify-center transition-all duration-300 ${
+                                isServiceSelected(packageOption.id)
+                                  ? "bg-indigo-600 ring-2 ring-indigo-400 ring-opacity-50"
+                                  : "border-2 border-gray-400 bg-transparent"
+                              }`}
+                            >
+                              {isServiceSelected(packageOption.id) && (
+                                <svg
+                                  className="w-3 h-3 text-white"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              )}
+                            </div>
+                            <span className="ml-3 text-base font-medium text-white">
+                              {packageOption.name}
+                            </span>
+                          </div>
+
+                          {/* Package options - only show if service is selected */}
+                          {isServiceSelected(packageOption.id) && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              transition={{ duration: 0.3 }}
+                              className="ml-5 mt-3 grid grid-cols-1 gap-3"
+                            >
+                              {packageOption.subpackages.map((subpackage) => (
+                                <div
+                                  key={subpackage.id}
+                                  className={`flex items-center p-4 rounded-lg cursor-pointer transition-all duration-300 ${
+                                    isPackageSelected(
+                                      packageOption.id,
+                                      subpackage.id
+                                    )
+                                      ? "bg-indigo-600/30 border border-indigo-500 shadow-md transform scale-[1.02]"
+                                      : "hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-500"
+                                  }`}
+                                  onClick={() =>
+                                    handlePackageSelect(
+                                      packageOption.id,
+                                      subpackage.id
+                                    )
+                                  }
+                                >
+                                  <div className="relative">
+                                    <div
+                                      className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                                        isPackageSelected(
+                                          packageOption.id,
+                                          subpackage.id
+                                        )
+                                          ? "border-indigo-400"
+                                          : "border-gray-500"
+                                      }`}
+                                    >
+                                      {isPackageSelected(
+                                        packageOption.id,
+                                        subpackage.id
+                                      ) && (
+                                        <motion.div
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          className="w-2.5 h-2.5 rounded-full bg-indigo-400"
+                                        ></motion.div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <span
+                                    className={`ml-3 block text-sm w-full ${
+                                      isPackageSelected(
+                                        packageOption.id,
+                                        subpackage.id
+                                      )
+                                        ? "text-white font-medium"
+                                        : "text-gray-300"
+                                    }`}
+                                  >
+                                    {subpackage.name}
+                                  </span>
+                                </div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {packageError && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-3 text-sm text-red-500 bg-red-500/10 p-2 rounded-md border border-red-500/30"
+                      >
+                        <div className="flex items-center">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            ></path>
+                          </svg>
+                          {packageError}
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+
+                  {/* Message Field */}
+                  <motion.div
+                    custom={2}
+                    initial="hidden"
+                    animate="visible"
+                    variants={formFieldVariants}
+                    className="relative"
+                  >
+                    <motion.textarea
+                      whileFocus="focus"
+                      animate={formFields[2].focused ? "focus" : "blur"}
+                      variants={inputVariants}
+                      id={formFields[2].name}
+                      name={formFields[2].name}
+                      value={formFields[2].value}
+                      rows={4}
+                      onChange={(e) => handleInputChange(2, e.target.value)}
+                      onFocus={() => {
+                        const updatedFields = [...formFields];
+                        updatedFields[2].focused = true;
+                        setFormFields(updatedFields);
+                      }}
+                      onBlur={() => {
+                        const updatedFields = [...formFields];
+                        updatedFields[2].focused = false;
+                        setFormFields(updatedFields);
+                      }}
+                      className={`block w-full px-4 py-3 rounded-lg border ${
+                        formFields[2].error
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300`}
+                      placeholder="Your Message"
+                    />
+                    {formFields[2].error && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1 text-sm text-red-600"
+                      >
+                        {formFields[2].error}
+                      </motion.p>
+                    )}
+                  </motion.div>
+
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
