@@ -14,8 +14,8 @@ if (typeof window !== "undefined") {
 
 // EmailJS configuration
 const EMAILJS_SERVICE_ID = "service_wkz2val";
-const EMAILJS_TEMPLATE_ID = "template_8y0hgza";
-const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY"; // Replace with your actual EmailJS public key
+const EMAILJS_TEMPLATE_ID = "template_jnsd323";
+const EMAILJS_PUBLIC_KEY = "F3dlBGHsu_Lo6I1RG";
 
 // Form field type
 type FormField = {
@@ -318,13 +318,22 @@ const ContactSection = () => {
     }
 
     // Validate phone (optional but must be valid if provided)
-    const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
-    if (
-      updatedFields[2].value.trim() &&
-      !phoneRegex.test(updatedFields[2].value)
-    ) {
-      updatedFields[2].error = "Please enter a valid phone number";
-      isValid = false;
+    // Validate phone (optional but must be valid if provided)
+    const phoneRegex = /^\+?[0-9]{0,15}$/;
+    if (updatedFields[2].value.trim()) {
+      if (!/^[0-9+\s()-]+$/.test(updatedFields[2].value)) {
+        updatedFields[2].error =
+          "Phone number can only contain digits and +()- characters";
+        isValid = false;
+      } else if (updatedFields[2].value.replace(/[^0-9]/g, "").length > 15) {
+        updatedFields[2].error = "Phone number is too long (max 15 digits)";
+        isValid = false;
+      } else if (
+        !phoneRegex.test(updatedFields[2].value.replace(/[\s()-]/g, ""))
+      ) {
+        updatedFields[2].error = "Please enter a valid phone number";
+        isValid = false;
+      }
     }
 
     // Validate message
@@ -747,7 +756,7 @@ const ContactSection = () => {
 
                   {/* Message Field */}
                   <motion.div
-                    custom={2}
+                    custom={3}
                     initial="hidden"
                     animate="visible"
                     variants={formFieldVariants}
@@ -755,40 +764,65 @@ const ContactSection = () => {
                   >
                     <motion.textarea
                       whileFocus="focus"
-                      animate={formFields[2].focused ? "focus" : "blur"}
+                      animate={formFields[3].focused ? "focus" : "blur"}
                       variants={inputVariants}
-                      id={formFields[2].name}
-                      name={formFields[2].name}
-                      value={formFields[2].value}
+                      id={formFields[3].name}
+                      name={formFields[3].name}
+                      value={formFields[3].value}
                       rows={4}
-                      onChange={(e) => handleInputChange(2, e.target.value)}
+                      onChange={(e) => handleInputChange(3, e.target.value)}
                       onFocus={() => {
                         const updatedFields = [...formFields];
-                        updatedFields[2].focused = true;
+                        updatedFields[3].focused = true;
                         setFormFields(updatedFields);
                       }}
                       onBlur={() => {
                         const updatedFields = [...formFields];
-                        updatedFields[2].focused = false;
+                        updatedFields[3].focused = false;
                         setFormFields(updatedFields);
                       }}
                       className={`block w-full px-4 py-3 rounded-lg bg-slate-800/70 text-white border ${
-                        formFields[2].error
+                        formFields[3].error
                           ? "border-red-500"
                           : "border-slate-600"
                       } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400`}
                       placeholder="Your Message"
                     />
-                    {formFields[2].error && (
+                    {formFields[3].error && (
                       <motion.p
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-1 text-sm text-red-400"
                       >
-                        {formFields[2].error}
+                        {formFields[3].error}
                       </motion.p>
                     )}
                   </motion.div>
+
+                  {/* Display form submission error if any */}
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-500/10 p-3 rounded-md border border-red-500/30 text-red-400 text-sm"
+                    >
+                      <div className="flex items-center">
+                        <svg
+                          className="w-5 h-5 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          ></path>
+                        </svg>
+                        {submitError}
+                      </div>
+                    </motion.div>
+                  )}
 
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -801,7 +835,7 @@ const ContactSection = () => {
                       icon={
                         isSubmitting ? (
                           <svg
-                            className="animate-spin h-5 w-5 text-white"
+                            className="animate-spin h-5 w-5 text-white mr-2"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -823,14 +857,9 @@ const ContactSection = () => {
                         ) : null
                       }
                       position="center"
-                      handleClick={() =>
-                        isSubmitting
-                          ? undefined
-                          : handleSubmit(
-                              new Event("submit") as unknown as React.FormEvent
-                            )
-                      }
-                      otherClasses={`!bg-[#161A31] ${
+                      type="submit"
+                      disabled={isSubmitting}
+                      otherClasses={`bg-[#161A31] ${
                         isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                       }`}
                     />
