@@ -45,28 +45,28 @@ const AnimatedLogoText = () => {
       );
 
       // Continuous subtle glow animation
-      animate(
-        "span",
-        {
-          textShadow: [
-            "0 0 5px rgba(111, 134, 245, 0.5)",
-            "0 0 15px rgba(111, 134, 245, 0.8)",
-            "0 0 5px rgba(111, 134, 245, 0.5)",
-          ],
-        },
-        {
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }
-      );
+      // animate(
+      //   "span",
+      //   {
+      //     textShadow: [
+      //       "0 0 5px rgba(255, 255, 255, 0.5)",
+      //       "0 0 15px rgba(255, 255, 255, 0.8)",
+      //       "0 0 5px rgba(255, 255, 255, 0.5)",
+      //     ],
+      //   },
+      //   {
+      //     duration: 3,
+      //     repeat: Infinity,
+      //     ease: "easeInOut",
+      //   }
+      // );
     };
 
     animateLogo();
   }, [animate]);
 
   // Split text into individual characters for letter animation
-  const text = "Truedge Digital";
+  const text = "Truedge Digital UK";
   const characters = text.split("");
 
   return (
@@ -80,7 +80,7 @@ const AnimatedLogoText = () => {
       {characters.map((char, index) => (
         <motion.span
           key={index}
-          className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500"
+          className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-950 via-gray-50 to-white"
           style={{
             display: char === " " ? "inline-block" : "inline-block",
             width: char === " " ? "0.5em" : "auto",
