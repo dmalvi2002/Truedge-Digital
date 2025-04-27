@@ -26,7 +26,8 @@ export const navItems = [
 export const gridItems = [
   {
     id: 1,
-    title: "We prioritize client collaboration, fostering open communication ",
+    title:
+      "Custom-Built Websites with Striking UX/UI Design, SEO-Focused & Captivating Animations.",
     description: "",
     className: "lg:col-span-3 md:col-span-6 md:row-span-4 lg:min-h-[60vh]",
     imgClassName: "w-full h-full",
@@ -56,7 +57,8 @@ export const gridItems = [
   },
   {
     id: 4,
-    title: "We are tech enthusiast with a passion for development.",
+    title:
+      "SEO, Digital Marketing & Social Media Branding to Elevate Your Brand.",
     description: "",
     className: "lg:col-span-2 md:col-span-3 md:row-span-1",
     imgClassName: "",
@@ -192,28 +194,28 @@ export const workExperience = [
   {
     id: 1,
     title: "Building High-Performance Websites",
-    desc: "Specialized in creating fast, responsive websites using Modern web technologies.",
+    desc: "Specialise in creating fast, responsive websites using Modern web technologies.",
     className: "md:col-span-2",
     thumbnail: "/exp1.svg",
   },
   {
     id: 2,
     title: "Web Development & SEO That Drives Results",
-    desc: "Implemented SEO best practices to improve website visibility and drive organic traffic.",
-    className: "md:col-span-2", // change to md:col-span-2
+    desc: "Implement SEO best practices to improve website visibility and drive organic traffic.",
+    className: "md:col-span-2",
     thumbnail: "/exp2.svg",
   },
   {
     id: 3,
     title: "Bringing Ideas to Life Through Design",
-    desc: "Designed and developed user-friendly interfaces that enhance user experience.",
-    className: "md:col-span-2", // change to md:col-span-2
+    desc: "Design and develop user-friendly interfaces that enhance user experience.",
+    className: "md:col-span-2",
     thumbnail: "/exp3.svg",
   },
   {
     id: 4,
-    title: "Optimized for Mobile. Built for Speed",
-    desc: "Created responsive designs that adapt to various screen sizes and devices.",
+    title: "Optimised for Mobile Interface and Speed",
+    desc: "Create responsive designs that adapt to various screen sizes and devices.",
     className: "md:col-span-2",
     thumbnail: "/exp4.svg",
   },

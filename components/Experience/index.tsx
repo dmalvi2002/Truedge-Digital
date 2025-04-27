@@ -9,7 +9,7 @@ const Experience = () => {
     <div className="py-20 w-full">
       <Heading
         text="Expert in"
-        highlightedText="Web & Tech Solutions"
+        highlightedText="Web & Digital Branding Solutions"
         className=""
       />
 

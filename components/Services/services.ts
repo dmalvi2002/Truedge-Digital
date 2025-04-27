@@ -11,6 +11,7 @@ export interface ServiceData {
 export interface ServiceModel {
   id: number;
   title: string;
+  pricing?: string; // Optional, only for some modals
   features: string[];
   highlight?: boolean;
 }
@@ -40,6 +41,7 @@ export const services: ServiceData[] = [
       {
         id: 101,
         title: "1 Page Website",
+        pricing: "450£",
         features: [
           "1 Page Website",
           "Includes Contact Page",
@@ -56,6 +58,7 @@ export const services: ServiceData[] = [
       {
         id: 102,
         title: "Business Essential",
+        pricing: "975£",
         features: [
           "Up to 6 Page Website",
           "Includes BLOG Page & Testimonial & Gallery Page",
@@ -76,6 +79,7 @@ export const services: ServiceData[] = [
       {
         id: 103,
         title: "Business Professional",
+        pricing: "1,450£",
         features: [
           "Fully Customised 10+ Page Website",
           "Includes Everything from Business Essential",
@@ -115,6 +119,7 @@ export const services: ServiceData[] = [
       {
         id: 201,
         title: "SEO Essentials",
+        pricing: "149£ per month",
         features: [
           "Complete Website SEO Audit",
           "Keyword Research & Strategy",
@@ -131,6 +136,7 @@ export const services: ServiceData[] = [
       {
         id: 202,
         title: "Complete Digital Marketing",
+        pricing: "299£ per month",
         features: [
           "Everything in SEO Essentials",
           "Advanced Technical SEO",

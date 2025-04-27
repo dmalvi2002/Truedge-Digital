@@ -22,21 +22,21 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="max-w-[89vw] sm:max-w-3xl"
           >
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="mb-2"
             >
               <img src="/logo.svg" alt="Logo" className="w-44 h-22" />
-            </motion.div>
+            </motion.div> */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 1 }}
               className="uppercase tracking-widest text-xs text-blue-100 max-w-80 mb-2"
             >
-              Crafting Excellence with Modern Tech
+              Helping Brands Build & Scale Online
             </motion.p>
 
             {/* Enhanced TextGenerateEffect with word-by-word hover effects */}
@@ -59,7 +59,8 @@ const Hero = () => {
               transition={{ delay: 2.5, duration: 1 }}
               className="md:tracking-wider mt-6 mb-8 text-sm md:text-lg lg:text-xl text-gray-300"
             >
-              Elevating your online presence with cutting-edge web solutions.
+              Expert in Website Design, Development & Marketing Services – Your
+              One-Stop Digital Agency
             </motion.p>
 
             <motion.div
