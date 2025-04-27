@@ -297,6 +297,16 @@ const ContactSection = () => {
     setFormFields(updatedFields);
   };
 
+  // Function to handle phone number input validation
+  const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Allow only numbers and the "+" sign, and limit to 15 characters
+    const sanitizedValue = value.replace(/[^0-9+]/g, "").slice(0, 15);
+
+    handleInputChange(2, sanitizedValue);
+  };
+
   const validateForm = (): boolean => {
     let isValid = true;
     const updatedFields = [...formFields];
@@ -317,7 +327,6 @@ const ContactSection = () => {
       isValid = false;
     }
 
-    // Validate phone (optional but must be valid if provided)
     // Validate phone (optional but must be valid if provided)
     const phoneRegex = /^\+?[0-9]{0,15}$/;
     if (updatedFields[2].value.trim()) {
@@ -530,7 +539,7 @@ const ContactSection = () => {
               ) : (
                 <>
                   {/* Name, Email, and Phone Fields First */}
-                  {formFields.slice(0, 3).map((field, index) => (
+                  {formFields.slice(0, 2).map((field, index) => (
                     <motion.div
                       key={field.name}
                       custom={index}
@@ -585,6 +594,51 @@ const ContactSection = () => {
                       )}
                     </motion.div>
                   ))}
+
+                  {/* Phone Field */}
+                  <motion.div
+                    custom={2}
+                    initial="hidden"
+                    animate="visible"
+                    variants={formFieldVariants}
+                    className="relative"
+                  >
+                    <motion.input
+                      whileFocus="focus"
+                      animate={formFields[2].focused ? "focus" : "blur"}
+                      variants={inputVariants}
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formFields[2].value}
+                      onChange={handlePhoneInput} // Use the custom handler for phone input
+                      onFocus={() => {
+                        const updatedFields = [...formFields];
+                        updatedFields[2].focused = true;
+                        setFormFields(updatedFields);
+                      }}
+                      onBlur={() => {
+                        const updatedFields = [...formFields];
+                        updatedFields[2].focused = false;
+                        setFormFields(updatedFields);
+                      }}
+                      className={`block w-full px-4 py-3 rounded-lg bg-slate-800/70 text-white border ${
+                        formFields[2].error
+                          ? "border-red-500"
+                          : "border-slate-600"
+                      } focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 placeholder:text-slate-400`}
+                      placeholder="Your Phone"
+                    />
+                    {formFields[2].error && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1 text-sm text-red-400"
+                      >
+                        {formFields[2].error}
+                      </motion.p>
+                    )}
+                  </motion.div>
 
                   {/* Service Selection */}
                   <motion.div
@@ -815,7 +869,7 @@ const ContactSection = () => {
                         >
                           <path
                             fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293-1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                             clipRule="evenodd"
                           ></path>
                         </svg>
