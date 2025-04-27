@@ -44,17 +44,17 @@ const ContactSection = () => {
       id: "web-development",
       name: "Web Development",
       subpackages: [
-        { id: "web-basic", name: "Basic Package" },
-        { id: "web-standard", name: "Standard Package" },
-        { id: "web-premium", name: "Premium Package" },
+        { id: "web-basic", name: "1 Page Website" },
+        { id: "web-standard", name: "Business Essential" },
+        { id: "web-premium", name: "Business Professional" },
       ],
     },
     {
       id: "seo-marketing",
       name: "SEO & Digital Marketing",
       subpackages: [
-        { id: "seo-basic", name: "Basic Package" },
-        { id: "seo-premium", name: "Premium Package" },
+        { id: "seo-basic", name: "SEO Essentials" },
+        { id: "seo-premium", name: "Complete Digital Marketing" },
       ],
     },
   ];
