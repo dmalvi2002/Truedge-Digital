@@ -12,62 +12,66 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 // Logo text component with animation
-const AnimatedLogoText = () => {
+const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
   const [scope, animate] = useAnimate();
 
   // Run animation when component mounts
   useEffect(() => {
     const animateLogo = async () => {
-      // Initial animation - text appearing with glow effect
-      await animate(
-        "span",
-        {
-          opacity: [0, 1],
-          y: [20, 0],
-          filter: ["blur(8px)", "blur(0px)"],
-        },
-        {
-          duration: 1.5,
-          delay: stagger(0.05),
-          ease: "easeOut",
-        }
-      );
+      if (isTopOfPage) {
+        // Initial animation - text appearing with glow effect
+        await animate(
+          "span",
+          {
+            opacity: [0, 1],
+            y: [20, 0],
+            filter: ["blur(8px)", "blur(0px)"],
+          },
+          {
+            duration: 1.5,
+            delay: stagger(0.05),
+            ease: "easeOut",
+          }
+        );
 
-      // Continuous floating animation
-      animate(
-        scope.current,
-        { y: [0, -8, 0] },
-        {
-          duration: 4,
-          ease: "easeInOut",
-          repeat: Infinity,
-        }
-      );
+        // Continuous floating animation
+        animate(
+          scope.current,
+          { y: [0, -8, 0] },
+          {
+            duration: 4,
+            ease: "easeInOut",
+            repeat: Infinity,
+          }
+        );
 
-      // Continuous subtle glow animation
-      // animate(
-      //   "span",
-      //   {
-      //     textShadow: [
-      //       "0 0 5px rgba(255, 255, 255, 0.5)",
-      //       "0 0 15px rgba(255, 255, 255, 0.8)",
-      //       "0 0 5px rgba(255, 255, 255, 0.5)",
-      //     ],
-      //   },
-      //   {
-      //     duration: 3,
-      //     repeat: Infinity,
-      //     ease: "easeInOut",
-      //   }
-      // );
+        // Continuous subtle glow animation
+        animate(
+          "span",
+          {
+            textShadow: [
+              "0 0 5px rgba(111, 134, 245, 0.5)",
+              "0 0 15px rgba(111, 134, 245, 0.8)",
+              "0 0 5px rgba(111, 134, 245, 0.5)",
+            ],
+          },
+          {
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }
+        );
+      }
     };
 
     animateLogo();
-  }, [animate]);
+  }, [animate, isTopOfPage]);
 
   // Split text into individual characters for letter animation
   const text = "Truedge Digital UK";
   const characters = text.split("");
+
+  if (!isTopOfPage) return null;
 
   return (
     <motion.div
@@ -80,7 +84,7 @@ const AnimatedLogoText = () => {
       {characters.map((char, index) => (
         <motion.span
           key={index}
-          className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-950 via-gray-50 to-white"
+          className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-950 via-gray-100 to-gray-50"
           style={{
             display: char === " " ? "inline-block" : "inline-block",
             width: char === " " ? "0.5em" : "auto",
@@ -133,7 +137,7 @@ const MobileOverlay = ({
           className="fixed inset-0 z-[6000] bg-black/90 backdrop-blur-md flex flex-col"
         >
           <div className="flex justify-between items-center p-5 border-b border-white/10">
-            <div className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-blue-500 to-blue-950 font-bold text-2xl">
+            <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500 font-bold text-xl">
               Truedge Digital
             </div>
             <motion.button
@@ -200,16 +204,19 @@ export const FloatingNav = ({
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isTopOfPage, setIsTopOfPage] = useState(true);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
       let direction = current! - scrollYProgress.getPrevious()!;
 
+      // Check if we're at the top of the page
       if (scrollYProgress.get() < 0.05) {
-        // also set true for the initial state
         setVisible(true);
+        setIsTopOfPage(true);
       } else {
+        setIsTopOfPage(false);
         if (direction < 0) {
           setVisible(true);
         } else {
@@ -297,8 +304,8 @@ export const FloatingNav = ({
             ))}
           </div>
 
-          {/* Animated Logo Text (Desktop only) */}
-          <AnimatedLogoText />
+          {/* Animated Logo Text (Desktop only) - Only appears at top of page */}
+          <AnimatedLogoText isTopOfPage={isTopOfPage} />
         </motion.div>
       </AnimatePresence>
 
