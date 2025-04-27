@@ -10,8 +10,8 @@ const Clients = () => {
   return (
     <section id="testimonials" className="py-20">
       <Heading
-        text="Kind words from"
-        highlightedText="our clients"
+        text="What Our"
+        highlightedText="Clients Are Saying"
         className=""
       />
 

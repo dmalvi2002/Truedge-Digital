@@ -102,7 +102,7 @@ const TypingAnimation = ({
           className="absolute top-0 left-0 w-full break-words"
           style={{
             opacity: fadedOpacity,
-            fontSize: "clamp(1.25rem, 5vw, 2.5rem)",
+            fontSize: "clamp(1.26rem, 5.1vw, 2.6rem)",
             lineHeight: "1.3",
             fontWeight: "800",
           }}
@@ -114,7 +114,7 @@ const TypingAnimation = ({
         <div
           className="absolute top-0 left-0 w-full break-words"
           style={{
-            fontSize: "clamp(1.25rem, 5vw, 2.5rem)",
+            fontSize: "clamp(1.26rem, 5.1vw, 2.6rem)",
             lineHeight: "1.3",
             fontWeight: "800",
           }}

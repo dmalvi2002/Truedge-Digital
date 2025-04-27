@@ -1,13 +1,97 @@
 "use client";
-import React, { useState, JSX } from "react";
+import React, { useState, JSX, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
+  useAnimate,
+  stagger,
 } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+
+// Logo text component with animation
+const AnimatedLogoText = () => {
+  const [scope, animate] = useAnimate();
+
+  // Run animation when component mounts
+  useEffect(() => {
+    const animateLogo = async () => {
+      // Initial animation - text appearing with glow effect
+      await animate(
+        "span",
+        {
+          opacity: [0, 1],
+          y: [20, 0],
+          filter: ["blur(8px)", "blur(0px)"],
+        },
+        {
+          duration: 1.5,
+          delay: stagger(0.05),
+          ease: "easeOut",
+        }
+      );
+
+      // Continuous floating animation
+      animate(
+        scope.current,
+        { y: [0, -8, 0] },
+        {
+          duration: 4,
+          ease: "easeInOut",
+          repeat: Infinity,
+        }
+      );
+
+      // Continuous subtle glow animation
+      animate(
+        "span",
+        {
+          textShadow: [
+            "0 0 5px rgba(111, 134, 245, 0.5)",
+            "0 0 15px rgba(111, 134, 245, 0.8)",
+            "0 0 5px rgba(111, 134, 245, 0.5)",
+          ],
+        },
+        {
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }
+      );
+    };
+
+    animateLogo();
+  }, [animate]);
+
+  // Split text into individual characters for letter animation
+  const text = "Truedge Digital";
+  const characters = text.split("");
+
+  return (
+    <motion.div
+      ref={scope}
+      className="flex justify-center absolute top-full left-1/2 transform -translate-x-1/2 mt-4 px-6 py-2 rounded-full bg-black/20 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
+      {characters.map((char, index) => (
+        <motion.span
+          key={index}
+          className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500"
+          style={{
+            display: char === " " ? "inline-block" : "inline-block",
+            width: char === " " ? "0.5em" : "auto",
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+};
 
 export const FloatingNav = ({
   navItems,
@@ -60,9 +144,6 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          // change rounded-full to rounded-lg
-          // remove dark:border-white/[0.2] dark:bg-black bg-white border-transparent
-          // change  pr-2 pl-8 py-2 to px-10 py-5
           "flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-[5000] top-10 inset-x-0 mx-auto px-10 py-5 rounded-lg border border-black/.1 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] items-center justify-center space-x-4",
           className
         )}
@@ -78,7 +159,7 @@ export const FloatingNav = ({
             key={`link=${idx}`}
             href={navItem.link}
             className={cn(
-              "relative text-neutral-50 items-center rounded-4xl px-2 py-1  flex space-x-1  hover:text-neutral-300 "
+              "relative text-neutral-50 items-center rounded-xl px-2 py-1 flex space-x-1 hover:text-neutral-300"
             )}
           >
             <span className="block sm:hidden">{navItem.icon}</span>
@@ -94,11 +175,9 @@ export const FloatingNav = ({
             )}
           </Link>
         ))}
-        {/* remove this login btn */}
-        {/* <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-white  dark:text-white px-4 py-2 rounded-full">
-          <span>Login</span>
-          <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
-        </button> */}
+
+        {/* Animated Logo Text */}
+        <AnimatedLogoText />
       </motion.div>
     </AnimatePresence>
   );

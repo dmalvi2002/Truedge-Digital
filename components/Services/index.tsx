@@ -10,6 +10,7 @@ import OfferCTA from "./OfferCTA";
 interface Modal {
   id: number;
   title: string;
+  pricing?: string; // Optional, only for some modals
   features: string[];
   highlight?: boolean;
 }
@@ -66,7 +67,6 @@ const ModalCard = ({
           Popular Choice
         </div>
       )}
-
       <h3
         className={`text-xl md:text-2xl font-bold mb-4 text-center ${
           modal.highlight ? "text-indigo-300" : "text-gray-200"
@@ -74,7 +74,14 @@ const ModalCard = ({
       >
         {modal.title}
       </h3>
-
+      <p className="text-gray-400 text-sm md:text-base mb-4 text-center">
+        <span className="text-lg font-semibold text-indigo-400">
+          Starting from
+        </span>{" "}
+        <span className="text-lg font-semibold text-yellow-300">
+          {modal.pricing}
+        </span>
+      </p>
       <ul className="space-y-2 md:space-y-3 mt-4 md:mt-6 flex-grow">
         {modal.features.map((feature, idx) => (
           <motion.li
@@ -112,7 +119,6 @@ const ModalCard = ({
           </motion.li>
         ))}
       </ul>
-
       <div className="mt-6 flex justify-center">
         <MagicButton
           title="Get Quotation"

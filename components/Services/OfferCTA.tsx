@@ -16,12 +16,13 @@ const OfferCTA = () => {
         <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6">
           <span className="text-white">Starting from with only </span>
           <span className="text-yellow-300">450£</span>
-          <span className="text-white">... </span>
-          <span className="text-purple-400">what are you waiting for?</span>
+          {/* <span className="text-white">... </span> */}
+          <span className="text-purple-400 block">
+            What are you waiting for?
+          </span>
         </h2>
         <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8">
-          Let's discuss how our services can help you achieve your business
-          goals. Contact us today for a free consultation.
+          let's discuss your requirements and get a free quotation!
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
@@ -29,7 +30,7 @@ const OfferCTA = () => {
             handleClick={() => {
               window.location.href = "/#contact";
             }}
-            title="Send Your Ideas"
+            title="Get a Quotation"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"

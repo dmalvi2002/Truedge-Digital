@@ -406,14 +406,18 @@ const Footer = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                whileHover={{ scale: 1.2 }}
               >
                 Get started
                 <motion.span
                   className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
                   initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
+                  animate={{ scaleX: [0, 1, 0] }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "easeInOut",
+                  }}
                 />
               </motion.span>
             </span>
