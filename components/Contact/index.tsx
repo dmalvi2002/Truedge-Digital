@@ -98,7 +98,7 @@ const ContactSection = () => {
         </svg>
       ),
       title: "Phone",
-      content: "+1 (555) 123-4567",
+      content: "+44 (0) 7832 921562",
     },
     {
       icon: (
@@ -117,7 +117,7 @@ const ContactSection = () => {
         </svg>
       ),
       title: "Email",
-      content: "contact@example.com",
+      content: "info@truedgedigital.co.uk",
     },
   ];
 
