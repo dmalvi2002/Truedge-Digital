@@ -133,7 +133,7 @@ const MobileOverlay = ({
           className="fixed inset-0 z-[6000] bg-black/90 backdrop-blur-md flex flex-col"
         >
           <div className="flex justify-between items-center p-5 border-b border-white/10">
-            <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500 font-bold text-xl">
+            <div className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-blue-500 to-blue-950 font-bold text-2xl">
               Truedge Digital
             </div>
             <motion.button
