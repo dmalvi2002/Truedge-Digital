@@ -5,11 +5,17 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Heading from "../ui/Heading";
 import MagicButton from "../ui/MagicButton";
+import emailjs from "@emailjs/browser";
 
 // Enable ScrollTrigger plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
+
+// EmailJS configuration
+const EMAILJS_SERVICE_ID = "service_wkz2val";
+const EMAILJS_TEMPLATE_ID = "template_8y0hgza";
+const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY"; // Replace with your actual EmailJS public key
 
 // Form field type
 type FormField = {
@@ -57,6 +63,7 @@ const ContactSection = () => {
   const [formFields, setFormFields] = useState<FormField[]>([
     { name: "name", value: "", error: "" },
     { name: "email", value: "", error: "" },
+    { name: "phone", value: "", error: "" }, // Added phone field
     { name: "message", value: "", error: "" },
   ]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
@@ -66,6 +73,7 @@ const ContactSection = () => {
   const [packageError, setPackageError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string>("");
 
   // Refs for GSAP animations
   const contactSectionRef = useRef<HTMLDivElement>(null);
@@ -120,6 +128,29 @@ const ContactSection = () => {
       content: "info@truedgedigital.co.uk",
     },
   ];
+
+  // Format services for EmailJS
+  const formatSelectedServices = () => {
+    let servicesText = "";
+
+    selectedServices.forEach((serviceId) => {
+      const serviceOption = packageOptions.find((p) => p.id === serviceId);
+      if (!serviceOption) return;
+
+      const serviceName = serviceOption.name;
+      const selectedPackageId = selectedPackages[serviceId];
+      const selectedPackage = serviceOption.subpackages.find(
+        (p) => p.id === selectedPackageId
+      );
+      const packageName = selectedPackage
+        ? selectedPackage.name
+        : "No package selected";
+
+      servicesText += `${serviceName}: ${packageName}\n`;
+    });
+
+    return servicesText.trim();
+  };
 
   // Handle service checkbox selection
   const handleServiceToggle = (serviceId: string, checked: boolean) => {
@@ -286,9 +317,19 @@ const ContactSection = () => {
       isValid = false;
     }
 
+    // Validate phone (optional but must be valid if provided)
+    const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+    if (
+      updatedFields[2].value.trim() &&
+      !phoneRegex.test(updatedFields[2].value)
+    ) {
+      updatedFields[2].error = "Please enter a valid phone number";
+      isValid = false;
+    }
+
     // Validate message
-    if (!updatedFields[2].value.trim()) {
-      updatedFields[2].error = "Message is required";
+    if (!updatedFields[3].value.trim()) {
+      updatedFields[3].error = "Message is required";
       isValid = false;
     }
 
@@ -318,37 +359,36 @@ const ContactSection = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setSubmitError("");
 
-    // Prepare selected services information for submission
-    const selectedServicesInfo = selectedServices.map((serviceId) => {
-      const serviceOption = packageOptions.find((p) => p.id === serviceId);
-      const serviceName = serviceOption?.name || "";
+    // Prepare services information for EmailJS
+    const servicesText = formatSelectedServices();
 
-      const selectedPackageId = selectedPackages[serviceId];
-      const selectedPackageInfo = serviceOption?.subpackages.find(
-        (sp) => sp.id === selectedPackageId
-      );
-      const packageName = selectedPackageInfo?.name || "";
-
-      return {
-        service: serviceName,
-        package: packageName,
-      };
-    });
-
-    // Prepare data for submission
-    const formData = {
+    // Prepare data for EmailJS
+    const emailjsParams = {
       name: formFields[0].value,
       email: formFields[1].value,
-      message: formFields[2].value,
-      selectedServices: selectedServicesInfo,
+      number: formFields[2].value, // Phone number
+      services: servicesText,
+      message: formFields[3].value,
     };
 
-    console.log("Submitting form data:", formData);
+    console.log("Submitting form data:", emailjsParams);
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Send email using EmailJS
+      if (!EMAILJS_PUBLIC_KEY) {
+        throw new Error(
+          "EmailJS public key is missing. Please configure it properly."
+        );
+      }
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        emailjsParams,
+        EMAILJS_PUBLIC_KEY
+      );
 
       // Form animation on success
       if (formRef.current) {
@@ -369,6 +409,9 @@ const ContactSection = () => {
       }
     } catch (error) {
       console.error("Form submission error:", error);
+      setSubmitError(
+        "There was an error sending your message. Please try again later."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -378,12 +421,14 @@ const ContactSection = () => {
     setFormFields([
       { name: "name", value: "", error: "" },
       { name: "email", value: "", error: "" },
+      { name: "phone", value: "", error: "" },
       { name: "message", value: "", error: "" },
     ]);
     setSelectedServices([]);
     setSelectedPackages({});
     setPackageError("");
     setSubmitSuccess(false);
+    setSubmitError("");
   };
 
   const inputVariants = {
@@ -475,8 +520,8 @@ const ContactSection = () => {
                 </motion.div>
               ) : (
                 <>
-                  {/* Name and Email Fields First */}
-                  {formFields.slice(0, 2).map((field, index) => (
+                  {/* Name, Email, and Phone Fields First */}
+                  {formFields.slice(0, 3).map((field, index) => (
                     <motion.div
                       key={field.name}
                       custom={index}
@@ -489,7 +534,13 @@ const ContactSection = () => {
                         whileFocus="focus"
                         animate={formFields[index].focused ? "focus" : "blur"}
                         variants={inputVariants}
-                        type={field.name === "email" ? "email" : "text"}
+                        type={
+                          field.name === "email"
+                            ? "email"
+                            : field.name === "phone"
+                            ? "tel"
+                            : "text"
+                        }
                         id={field.name}
                         name={field.name}
                         value={field.value}
@@ -512,7 +563,7 @@ const ContactSection = () => {
                         placeholder={`Your ${
                           field.name.charAt(0).toUpperCase() +
                           field.name.slice(1)
-                        }`}
+                        }${field.name === "phone" ? " " : ""}`}
                       />
                       {field.error && (
                         <motion.p
