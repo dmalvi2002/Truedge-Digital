@@ -361,7 +361,7 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
       <ul
         ref={scrollerRef}
         className={cn(
-          "flex min-w-full shrink-0 gap-16 py-4 w-max flex-nowrap cursor-grab",
+          "flex min-w-full h-full shrink-0 gap-16 py-4 w-max flex-nowrap cursor-grab",
           start && "will-change-transform"
         )}
         style={{
