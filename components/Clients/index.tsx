@@ -24,6 +24,7 @@ const Clients = () => {
             items={testimonials}
             direction="right"
             speed="slow"
+            className="w-full"
           />
         </div>
 
