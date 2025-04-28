@@ -91,58 +91,58 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
   // Store original items for reference
   const originalItems = useRef<TestimonialItem[]>(items);
 
-  // Use a state for visible items (what's rendered)
-  const [visibleItems, setVisibleItems] = useState<TestimonialItem[]>([]);
-
-  // Initialize visible items - create a repeating pattern
-  const initializeItems = useCallback(() => {
-    if (!originalItems.current.length) return;
-
-    // Create multiple sets of items to ensure enough content
-    // Starting with 3 sets is usually enough for most screen sizes
-    const repeatedItems = [
-      ...originalItems.current,
-      ...originalItems.current,
-      ...originalItems.current,
-    ];
-
-    setVisibleItems(repeatedItems);
-  }, []);
-
   // Get speed in pixels per second based on the speed prop
   const getSpeedValue = useCallback((): number => {
     switch (speed) {
       case "fast":
-        return 60;
+        return 80;
       case "normal":
-        return 40;
+        return 50;
       case "slow":
-        return 20;
+        return 30;
       default:
-        return 40;
+        return 50;
     }
   }, [speed]);
 
-  // Calculate animation duration based on container width and speed
-  const getAnimationDuration = useCallback((): number => {
-    if (!containerRef.current || !scrollerRef.current) return 20;
+  // Calculate animation duration based on distance and speed
+  const getAnimationDuration = useCallback(
+    (distance: number): number => {
+      // Calculate duration based on pixel speed
+      const pixelSpeed = getSpeedValue();
+      const duration = Math.abs(distance) / pixelSpeed;
+
+      return duration;
+    },
+    [getSpeedValue]
+  );
+
+  // Check if the scroller has reached the bounds and should reverse direction
+  const checkBoundsAndDirection = useCallback(() => {
+    if (!scrollerRef.current || !containerRef.current) return currentDirection;
 
     const containerWidth = containerRef.current.offsetWidth;
     const scrollerWidth = scrollerRef.current.scrollWidth;
-    const itemWidth = scrollerWidth / visibleItems.length;
+    const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
 
-    // Calculate how many pixels we need to move for one full cycle
-    // For one full cycle, we need to move the width of all original items
-    const cycleDistance = itemWidth * originalItems.current.length;
+    // Calculate the leftmost and rightmost bounds
+    const leftBound = -(scrollerWidth - containerWidth);
+    const rightBound = 0;
 
-    // Calculate duration based on pixel speed
-    const pixelSpeed = getSpeedValue();
-    const duration = cycleDistance / pixelSpeed;
+    // Determine if we need to change direction
+    if (currentDirection === "left" && currentX <= leftBound + 5) {
+      // We've reached the left end, start moving right
+      return "right";
+    } else if (currentDirection === "right" && currentX >= rightBound - 5) {
+      // We've reached the right end, start moving left
+      return "left";
+    }
 
-    return duration;
-  }, [visibleItems.length, getSpeedValue]);
+    // No direction change needed
+    return currentDirection;
+  }, [currentDirection]);
 
-  // Main animation function - uses a repeating pattern for smooth transition
+  // Main animation function - moves cards and reverses direction at bounds
   const startAnimation = useCallback(() => {
     if (!scrollerRef.current || !containerRef.current || isAnimating.current)
       return;
@@ -154,75 +154,69 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
 
     isAnimating.current = true;
 
-    // Check if we need to add more items to ensure smooth scrolling
-    const containerWidth = containerRef.current.offsetWidth;
-    const scrollerWidth = scrollerRef.current.scrollWidth;
-
-    // If scroller width is not enough for smooth scrolling, add more items
-    if (scrollerWidth < containerWidth * 3) {
-      setVisibleItems((prev) => [...prev, ...originalItems.current]);
-      // Delay starting animation to let the new items render
-      setTimeout(() => {
-        isAnimating.current = false;
-        startAnimation();
-      }, 50);
+    // Check if we need to change direction
+    const newDirection = checkBoundsAndDirection();
+    if (newDirection !== currentDirection) {
+      setCurrentDirection(newDirection);
+      // Allow the effect to run
+      isAnimating.current = false;
       return;
     }
 
-    // Calculate single cycle distance - the width of original items set
-    const itemSetWidth =
-      (scrollerWidth / visibleItems.length) * originalItems.current.length;
+    // Calculate bounds
+    const containerWidth = containerRef.current.offsetWidth;
+    const scrollerWidth = scrollerRef.current.scrollWidth;
+    const leftBound = -(scrollerWidth - containerWidth);
+    const rightBound = 0;
 
-    // Set initial position if needed
+    // Get current position
     const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
-    if (currentX === 0) {
-      if (currentDirection === "left") {
-        gsap.set(scrollerRef.current, { x: 0 });
-      } else {
-        gsap.set(scrollerRef.current, { x: -itemSetWidth });
-      }
+
+    // Calculate target position based on direction
+    let targetX;
+    if (currentDirection === "left") {
+      // Moving left, target the left bound
+      targetX = leftBound;
+    } else {
+      // Moving right, target the right bound
+      targetX = rightBound;
     }
 
-    // Get duration based on speed setting
-    const duration = getAnimationDuration();
-
-    // Determine target based on current position and direction
-    const targetX =
-      currentDirection === "left"
-        ? currentX - itemSetWidth // Move left by one set
-        : currentX + itemSetWidth; // Move right by one set
+    // Calculate distance and duration
+    const distance = targetX - currentX;
+    const duration = getAnimationDuration(distance);
 
     // Create the animation with proper easing for smoothness
     tweenRef.current = gsap.to(scrollerRef.current, {
       x: targetX,
       duration,
       ease: "linear",
+      onUpdate: function () {
+        // Periodically check if we should update the direction
+        // This handles the case when a user resizes the window during animation
+        if (this.progress() % 0.1 < 0.01) {
+          // Check roughly every 10% of the animation
+          const shouldChangeDirection =
+            checkBoundsAndDirection() !== currentDirection;
+          if (shouldChangeDirection) {
+            tweenRef.current?.kill();
+            isAnimating.current = false;
+            startAnimation();
+          }
+        }
+      },
       onComplete: () => {
-        if (!scrollerRef.current) return;
-
-        // When the animation completes, reset position to create infinite loop
-        // This is done by moving the position back by one full cycle length
-        const newX = gsap.getProperty(scrollerRef.current, "x") as number;
-
-        if (currentDirection === "left") {
-          // If we've moved far enough to the left, jump back right
-          if (newX <= -itemSetWidth * 2) {
-            gsap.set(scrollerRef.current, { x: newX + itemSetWidth });
-          }
-        } else {
-          // If we've moved far enough to the right, jump back left
-          if (newX >= 0) {
-            gsap.set(scrollerRef.current, { x: newX - itemSetWidth });
-          }
+        // When animation completes, check direction again and restart
+        const newDirection = checkBoundsAndDirection();
+        if (newDirection !== currentDirection) {
+          setCurrentDirection(newDirection);
         }
 
         isAnimating.current = false;
-
-        // Continue the animation
         startAnimation();
       },
     });
-  }, [currentDirection, getAnimationDuration, visibleItems.length]);
+  }, [currentDirection, checkBoundsAndDirection, getAnimationDuration]);
 
   // Set up draggable functionality
   const setupDraggable = useCallback(() => {
@@ -235,6 +229,7 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
 
     draggableRef.current = Draggable.create(scrollerRef.current, {
       type: "x",
+      bounds: containerRef.current,
       inertia: true,
       onDragStart: function () {
         // Pause the animation
@@ -244,8 +239,6 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
         lastDragX.current = this.x as number;
       },
       onDrag: function () {
-        if (!scrollerRef.current) return;
-
         const currentX = this.x as number;
 
         // Determine drag direction
@@ -256,23 +249,6 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
         }
 
         lastDragX.current = currentX;
-
-        // Handle wrap-around during dragging
-        const scrollerWidth = scrollerRef.current.scrollWidth;
-        const itemSetWidth =
-          (scrollerWidth / visibleItems.length) * originalItems.current.length;
-
-        // If dragged too far left, wrap to right
-        if (currentX < -scrollerWidth + containerRef.current!.offsetWidth) {
-          this.x = currentX + itemSetWidth;
-          lastDragX.current = this.x;
-        }
-
-        // If dragged too far right, wrap to left
-        if (currentX > 0) {
-          this.x = currentX - itemSetWidth;
-          lastDragX.current = this.x;
-        }
       },
       onDragEnd: function () {
         isDragging.current = false;
@@ -285,12 +261,21 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
         startAnimation();
       },
     })[0];
-  }, [startAnimation, visibleItems.length]);
+
+    // Set proper bounds for the draggable
+    if (containerRef.current && scrollerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const scrollerWidth = scrollerRef.current.scrollWidth;
+
+      draggableRef.current.applyBounds({
+        minX: -(scrollerWidth - containerWidth),
+        maxX: 0,
+      });
+    }
+  }, [startAnimation]);
 
   // Initialize on mount
   useEffect(() => {
-    initializeItems();
-
     // Short delay to ensure DOM is ready
     const timeout = setTimeout(() => {
       setStart(true);
@@ -304,23 +289,13 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
       if (draggableRef.current) draggableRef.current.kill();
       isAnimating.current = false;
     };
-  }, [initializeItems, setupDraggable, startAnimation]);
+  }, [setupDraggable, startAnimation]);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       // Reset and restart animation
       if (tweenRef.current) tweenRef.current.kill();
-
-      // Check if we need to add more items based on new container width
-      if (containerRef.current && scrollerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const scrollerWidth = scrollerRef.current.scrollWidth;
-
-        if (scrollerWidth < containerWidth * 3) {
-          setVisibleItems((prev) => [...prev, ...originalItems.current]);
-        }
-      }
 
       setupDraggable();
 
@@ -332,7 +307,7 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [setupDraggable, startAnimation, start, originalItems]);
+  }, [setupDraggable, startAnimation, start]);
 
   // Handle pause on hover
   useEffect(() => {
@@ -394,7 +369,7 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
           transform: "translate3d(0, 0, 0)",
         }}
       >
-        {visibleItems.map((item, index) => (
+        {originalItems.current.map((item, index) => (
           <CardTemplate
             key={`testimonial-${index}`}
             quote={item.quote}
