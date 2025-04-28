@@ -960,23 +960,23 @@ const ContactSection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     whileHover={{ y: -5 }}
-                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-6 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm flex flex-col h-full"
+                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm flex flex-col h-full"
                   >
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-3 flex-shrink-0 w-12 h-12 flex items-center justify-center">
+                    <div className="flex items-start space-x-3 flex-1">
+                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-2 flex-shrink-0 w-10 h-10 flex items-center justify-center">
                         {item.icon}
                       </div>
                       <div className="flex flex-col justify-center min-w-0 flex-1">
-                        <h3 className="font-bold text-gray-200 text-lg mb-1 truncate">
+                        <h3 className="font-bold text-gray-200 text-base mb-0.5 truncate">
                           {item.title}
                         </h3>
-                        <p className="text-indigo-300/90 font-medium text-md overflow-hidden text-ellipsis break-all">
+                        <p className="text-indigo-300/90 font-medium text-sm overflow-hidden text-ellipsis">
                           {item.content}
                         </p>
                       </div>
                     </div>
                     <motion.div
-                      className="w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent mt-4 rounded-full"
+                      className="w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent mt-3 rounded-full"
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
