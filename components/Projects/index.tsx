@@ -7,6 +7,12 @@ import { PinContainer } from "./Pin";
 import Heading from "../ui/Heading";
 
 const RecentProjects = () => {
+  const handleProjectClick = (link: string | undefined) => {
+    if (link) {
+      window.open(link, "_blank");
+    }
+  };
+
   return (
     <div className="py-20">
       <a href="#projects" id="projects" />
@@ -24,10 +30,7 @@ const RecentProjects = () => {
             {/* Intense blur effect behind the card */}
             <div className="absolute inset-0 bg-black/40 rounded-3xl blur-3xl opacity-50 group-hover:opacity-90 transition-opacity duration-300"></div>
 
-            <PinContainer
-              title="/ui.aceternity.com"
-              href="https://twitter.com/mannupaaji"
-            >
+            <PinContainer title={item.title} href={item.link}>
               <div className="relative flex items-center justify-center lg:w-[30rem] md:w-[26rem] sm:w-96 w-[80vw] overflow-hidden h-[20vh] lg:h-[30vh] mb-10">
                 <div
                   className="relative w-full h-full overflow-hidden lg:rounded-3xl backdrop-blur-3xl"
@@ -84,12 +87,15 @@ const RecentProjects = () => {
                   ))}
                 </div>
 
-                <div className="flex justify-center items-center group/link">
+                <button
+                  onClick={() => handleProjectClick(item.link)}
+                  className="flex justify-center items-center group/link cursor-pointer"
+                >
                   <p className="flex lg:text-xl md:text-xs text-sm text-purple group-hover/link:text-purple/80 transition-colors duration-300">
                     Check Live Site
                   </p>
                   <FaLocationArrow className="ms-3 text-purple group-hover/link:translate-x-1 transition-transform duration-300" />
-                </div>
+                </button>
               </div>
             </PinContainer>
           </div>

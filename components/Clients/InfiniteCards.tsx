@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 
@@ -10,140 +10,216 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(Draggable);
 }
 
-export const InfiniteMovingCards = ({
+// Define interface for testimonial item
+interface TestimonialItem {
+  quote: string;
+  name: string;
+  title: string;
+}
+
+// Card Template Component Props Interface
+interface CardTemplateProps {
+  quote: string;
+  name: string;
+  title: string;
+}
+
+// Card Template Component
+const CardTemplate: React.FC<CardTemplateProps> = ({ quote, name, title }) => (
+  <li
+    className="w-[90vw] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-800 p-5 py-5 md:p-16 md:w-[60vw]"
+    style={{
+      background: "rgb(4,7,29)",
+      backgroundImage:
+        "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
+    }}
+  >
+    <blockquote>
+      <div
+        aria-hidden="true"
+        className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
+      ></div>
+      <span className="relative z-20 text-sm md:text-lg leading-[1.6] text-white font-normal">
+        {quote}
+      </span>
+      <div className="relative z-20 mt-6 flex flex-row items-center">
+        <div className="me-3">
+          <img src="/profile.svg" alt="profile" />
+        </div>
+        <span className="flex flex-col gap-1">
+          <span className="text-xl font-bold leading-[1.6] text-white">
+            {name}
+          </span>
+          <span className="text-sm leading-[1.6] text-white-200 font-normal">
+            {title}
+          </span>
+        </span>
+      </div>
+    </blockquote>
+  </li>
+);
+
+// InfiniteMovingCards Component Props Interface
+interface InfiniteMovingCardsProps {
+  items: TestimonialItem[];
+  direction?: "left" | "right";
+  speed?: "fast" | "normal" | "slow";
+  pauseOnHover?: boolean;
+  className?: string;
+}
+
+export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
   items,
   direction = "left",
   speed = "fast",
   pauseOnHover = true,
   className,
-}: {
-  items: {
-    quote: string;
-    name: string;
-    title: string;
-  }[];
-  direction?: "left" | "right";
-  speed?: "fast" | "normal" | "slow";
-  pauseOnHover?: boolean;
-  className?: string;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollerRef = useRef<HTMLUListElement>(null);
-  const [start, setStart] = useState(false);
+  const [start, setStart] = useState<boolean>(false);
   const [currentDirection, setCurrentDirection] = useState<"left" | "right">(
     direction
   );
   const tweenRef = useRef<gsap.core.Tween | null>(null);
   const draggableRef = useRef<Draggable | null>(null);
-  const isDragging = useRef(false);
-  const startDragX = useRef(0);
+  const isDragging = useRef<boolean>(false);
+  const isAnimating = useRef<boolean>(false);
+  const lastDragX = useRef<number>(0);
+  const currentDragDirection = useRef<"left" | "right">(direction);
 
-  // State to track the last drag direction
-  const [lastDragDirection, setLastDragDirection] = useState<
-    "left" | "right" | null
-  >(null);
+  // Store original items for reference
+  const originalItems = useRef<TestimonialItem[]>(items);
 
-  // Convert speed to duration in seconds
-  const getSpeedDuration = (): number => {
+  // Get speed in pixels per second based on the speed prop
+  const getSpeedValue = useCallback((): number => {
     switch (speed) {
       case "fast":
-        return 5;
+        return 80;
       case "normal":
-        return 20;
+        return 50;
       case "slow":
-        return 40;
+        return 30;
       default:
-        return 20;
+        return 50;
     }
-  };
+  }, [speed]);
 
-  // Initialize the animation
-  const initAnimation = () => {
-    if (!scrollerRef.current || !containerRef.current) return;
+  // Calculate animation duration based on distance and speed
+  const getAnimationDuration = useCallback(
+    (distance: number): number => {
+      // Calculate duration based on pixel speed
+      const pixelSpeed = getSpeedValue();
+      const duration = Math.abs(distance) / pixelSpeed;
 
-    // Add items to the scroller
-    setupItems();
+      return duration;
+    },
+    [getSpeedValue]
+  );
 
-    // Set up the draggable
-    setupDraggable();
+  // Check if the scroller has reached the bounds and should reverse direction
+  const checkBoundsAndDirection = useCallback(() => {
+    if (!scrollerRef.current || !containerRef.current) return currentDirection;
 
-    // Start the animation
-    startAnimation();
-  };
+    const containerWidth = containerRef.current.offsetWidth;
+    const scrollerWidth = scrollerRef.current.scrollWidth;
+    const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
 
-  // Set up the items in the carousel
-  const setupItems = () => {
-    if (!scrollerRef.current) return;
+    // Calculate the leftmost and rightmost bounds
+    const leftBound = -(scrollerWidth - containerWidth);
+    const rightBound = 0;
 
-    // Clear the scroller
-    scrollerRef.current.innerHTML = "";
+    // Determine if we need to change direction
+    if (currentDirection === "left" && currentX <= leftBound + 5) {
+      // We've reached the left end, start moving right
+      return "right";
+    } else if (currentDirection === "right" && currentX >= rightBound - 5) {
+      // We've reached the right end, start moving left
+      return "left";
+    }
 
-    // Create the original items
-    items.forEach((item) => {
-      const li = document.createElement("li");
-      li.className =
-        "w-[90vw] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-800 p-5 md:p-16 md:w-[60vw]";
-      li.style.background = "rgb(4,7,29)";
-      li.style.backgroundImage =
-        "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)";
+    // No direction change needed
+    return currentDirection;
+  }, [currentDirection]);
 
-      li.innerHTML = `
-        <blockquote>
-          <div
-            aria-hidden="true"
-            class="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%_+_4px)] w-[calc(100%_+_4px)]"
-          ></div>
-          <span class="relative z-20 text-sm md:text-lg leading-[1.6] text-white font-normal">
-            ${item.quote}
-          </span>
-          <div class="relative z-20 mt-6 flex flex-row items-center">
-            <div class="me-3">
-              <img src="/profile.svg" alt="profile" />
-            </div>
-            <span class="flex flex-col gap-1">
-              <span class="text-xl font-bold leading-[1.6] text-white">
-                ${item.name}
-              </span>
-              <span class="text-sm leading-[1.6] text-white-200 font-normal">
-                ${item.title}
-              </span>
-            </span>
-          </div>
-        </blockquote>
-      `;
+  // Main animation function - moves cards and reverses direction at bounds
+  const startAnimation = useCallback(() => {
+    if (!scrollerRef.current || !containerRef.current || isAnimating.current)
+      return;
 
-      if (scrollerRef.current) {
-        scrollerRef.current.appendChild(li);
-      }
+    // Kill any existing animation
+    if (tweenRef.current) {
+      tweenRef.current.kill();
+    }
+
+    isAnimating.current = true;
+
+    // Check if we need to change direction
+    const newDirection = checkBoundsAndDirection();
+    if (newDirection !== currentDirection) {
+      setCurrentDirection(newDirection);
+      // Allow the effect to run
+      isAnimating.current = false;
+      return;
+    }
+
+    // Calculate bounds
+    const containerWidth = containerRef.current.offsetWidth;
+    const scrollerWidth = scrollerRef.current.scrollWidth;
+    const leftBound = -(scrollerWidth - containerWidth);
+    const rightBound = 0;
+
+    // Get current position
+    const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
+
+    // Calculate target position based on direction
+    let targetX;
+    if (currentDirection === "left") {
+      // Moving left, target the left bound
+      targetX = leftBound;
+    } else {
+      // Moving right, target the right bound
+      targetX = rightBound;
+    }
+
+    // Calculate distance and duration
+    const distance = targetX - currentX;
+    const duration = getAnimationDuration(distance);
+
+    // Create the animation with proper easing for smoothness
+    tweenRef.current = gsap.to(scrollerRef.current, {
+      x: targetX,
+      duration,
+      ease: "linear",
+      onUpdate: function () {
+        // Periodically check if we should update the direction
+        // This handles the case when a user resizes the window during animation
+        if (this.progress() % 0.1 < 0.01) {
+          // Check roughly every 10% of the animation
+          const shouldChangeDirection =
+            checkBoundsAndDirection() !== currentDirection;
+          if (shouldChangeDirection) {
+            tweenRef.current?.kill();
+            isAnimating.current = false;
+            startAnimation();
+          }
+        }
+      },
+      onComplete: () => {
+        // When animation completes, check direction again and restart
+        const newDirection = checkBoundsAndDirection();
+        if (newDirection !== currentDirection) {
+          setCurrentDirection(newDirection);
+        }
+
+        isAnimating.current = false;
+        startAnimation();
+      },
     });
+  }, [currentDirection, checkBoundsAndDirection, getAnimationDuration]);
 
-    // Calculate how many clones we need
-    const originals = Array.from(scrollerRef.current.children);
-    const firstItem = originals[0] as HTMLElement;
-    const itemWidth = firstItem.offsetWidth;
-    const containerWidth = containerRef.current!.offsetWidth;
-    const itemsNeeded = Math.ceil(containerWidth / itemWidth) * 3;
-
-    // Create clones to fill the space
-    const numClones = Math.max(
-      itemsNeeded - originals.length,
-      originals.length * 2
-    );
-
-    // Add clones
-    for (let i = 0; i < numClones; i++) {
-      const clone = originals[i % originals.length].cloneNode(true);
-      scrollerRef.current.appendChild(clone);
-    }
-
-    // Position the scroller initially
-    const scrollWidth = scrollerRef.current.scrollWidth;
-    const viewWidth = scrollWidth / 3;
-    gsap.set(scrollerRef.current, { x: -viewWidth });
-  };
-
-  // Set up draggable
-  const setupDraggable = () => {
+  // Set up draggable functionality
+  const setupDraggable = useCallback(() => {
     if (!scrollerRef.current) return;
 
     // Clean up existing draggable
@@ -153,205 +229,126 @@ export const InfiniteMovingCards = ({
 
     draggableRef.current = Draggable.create(scrollerRef.current, {
       type: "x",
+      bounds: containerRef.current,
       inertia: true,
       onDragStart: function () {
         // Pause the animation
-        if (tweenRef.current) {
-          tweenRef.current.pause();
-        }
+        if (tweenRef.current) tweenRef.current.pause();
 
         isDragging.current = true;
-        startDragX.current = this.x;
+        lastDragX.current = this.x as number;
+      },
+      onDrag: function () {
+        const currentX = this.x as number;
+
+        // Determine drag direction
+        if (currentX < lastDragX.current) {
+          currentDragDirection.current = "left";
+        } else if (currentX > lastDragX.current) {
+          currentDragDirection.current = "right";
+        }
+
+        lastDragX.current = currentX;
       },
       onDragEnd: function () {
         isDragging.current = false;
 
-        // Calculate drag distance and direction
-        const endX = this.x;
-        const dragDelta = endX - startDragX.current;
-        const dragThreshold = 10; // Minimum pixels to consider it a directional drag
+        // Update the direction state based on the drag
+        setCurrentDirection(currentDragDirection.current);
 
-        // Only change direction if the drag was significant
-        if (Math.abs(dragDelta) > dragThreshold) {
-          // Determine drag direction (the physical direction user dragged)
-          const draggedDirection = dragDelta < 0 ? "left" : "right";
-
-          // Update the last drag direction
-          setLastDragDirection(draggedDirection);
-
-          // Set the carousel direction to match the drag direction
-          setCurrentDirection(draggedDirection);
-
-          console.log(
-            `Drag detected: ${draggedDirection}, changing carousel direction to: ${draggedDirection}`
-          );
-        }
-
-        // Restart animation from current position
+        // Restart the animation
+        isAnimating.current = false;
         startAnimation();
       },
     })[0];
-  };
 
-  // Start or restart the animation
-  const startAnimation = () => {
-    if (!scrollerRef.current) return;
+    // Set proper bounds for the draggable
+    if (containerRef.current && scrollerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const scrollerWidth = scrollerRef.current.scrollWidth;
 
-    // Clean up existing animation
-    if (tweenRef.current) {
-      tweenRef.current.kill();
+      draggableRef.current.applyBounds({
+        minX: -(scrollerWidth - containerWidth),
+        maxX: 0,
+      });
     }
+  }, [startAnimation]);
 
-    // Get current position
-    const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
-
-    // Calculate animation parameters
-    const scrollWidth = scrollerRef.current.scrollWidth;
-    const viewWidth = scrollWidth / 3;
-
-    // Target position based on direction
-    // If direction is "left", move content to the left (negative)
-    // If direction is "right", move content to the right (positive)
-    const targetX =
-      currentDirection === "left" ? currentX - viewWidth : currentX + viewWidth;
-
-    // Duration based on speed
-    const duration = getSpeedDuration() * (viewWidth / 1000);
-
-    console.log(
-      `Animation starting - Direction: ${currentDirection}, ` +
-        `Current position: ${currentX}, Target position: ${targetX}`
-    );
-
-    // Create animation
-    tweenRef.current = gsap.to(scrollerRef.current, {
-      x: targetX,
-      duration,
-      ease: "none",
-      onComplete: handleAnimationComplete,
-    });
-  };
-
-  // Handle animation completion
-  const handleAnimationComplete = () => {
-    if (!scrollerRef.current) return;
-
-    // Get current position
-    const currentX = gsap.getProperty(scrollerRef.current, "x") as number;
-
-    // Calculate wrap position
-    const scrollWidth = scrollerRef.current.scrollWidth;
-    const viewWidth = scrollWidth / 3;
-
-    // Determine if we need to wrap
-    let resetX = currentX;
-
-    if (currentDirection === "left" && currentX <= -viewWidth * 2) {
-      // If going left and reached left boundary, reset to one viewWidth left
-      resetX = -viewWidth;
-    } else if (currentDirection === "right" && currentX >= 0) {
-      // If going right and reached right boundary, reset to one viewWidth right
-      resetX = -viewWidth;
-    }
-
-    // Reset position instantly if needed
-    if (resetX !== currentX) {
-      gsap.set(scrollerRef.current, { x: resetX });
-    }
-
-    // Continue animation
-    startAnimation();
-  };
-
-  // Set up event listeners for hover pause
+  // Initialize on mount
   useEffect(() => {
-    const container = containerRef.current;
-
-    if (container && pauseOnHover) {
-      const handleMouseEnter = () => {
-        if (tweenRef.current && !isDragging.current) {
-          tweenRef.current.pause();
-        }
-      };
-
-      const handleMouseLeave = () => {
-        if (tweenRef.current && !isDragging.current) {
-          tweenRef.current.play();
-        }
-      };
-
-      container.addEventListener("mouseenter", handleMouseEnter);
-      container.addEventListener("mouseleave", handleMouseLeave);
-
-      return () => {
-        container.removeEventListener("mouseenter", handleMouseEnter);
-        container.removeEventListener("mouseleave", handleMouseLeave);
-      };
-    }
-  }, [pauseOnHover]);
-
-  // Initialize on load
-  useEffect(() => {
+    // Short delay to ensure DOM is ready
     const timeout = setTimeout(() => {
       setStart(true);
-      initAnimation();
+      setupDraggable();
+      startAnimation();
     }, 100);
 
     return () => {
       clearTimeout(timeout);
-      if (tweenRef.current) {
-        tweenRef.current.kill();
-      }
-      if (draggableRef.current) {
-        draggableRef.current.kill();
-      }
+      if (tweenRef.current) tweenRef.current.kill();
+      if (draggableRef.current) draggableRef.current.kill();
+      isAnimating.current = false;
     };
-  }, []);
-
-  // Monitor and debug drag directions and carousel direction
-  useEffect(() => {
-    // This effect monitors changes in drag and carousel direction
-    const handleDragDirectionChange = (
-      dragDirection: "left" | "right" | null
-    ): void => {
-      // The carousel direction should always match the drag direction
-      // This ensures:
-      // 1. If carousel is moving right and user drags right → continue right
-      // 2. If carousel is moving left and user drags left → continue left
-      // 3. If carousel is moving right and user drags left → switch to left
-      // 4. If carousel is moving left and user drags right → switch to right
-      console.log(
-        `Drag direction: ${dragDirection}, Setting carousel direction to: ${dragDirection}`
-      );
-    };
-
-    // We could add additional logging or debugging here if needed
-    return () => {
-      // Cleanup if needed
-    };
-  }, [currentDirection]);
-
-  // Update when direction changes
-  useEffect(() => {
-    if (start && !isDragging.current) {
-      startAnimation();
-    }
-  }, [currentDirection, start]);
+  }, [setupDraggable, startAnimation]);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
+      // Reset and restart animation
+      if (tweenRef.current) tweenRef.current.kill();
+
+      setupDraggable();
+
       if (start) {
-        initAnimation();
+        isAnimating.current = false;
+        startAnimation();
       }
     };
 
     window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setupDraggable, startAnimation, start]);
+
+  // Handle pause on hover
+  useEffect(() => {
+    if (!pauseOnHover || !containerRef.current) return;
+
+    const handleMouseEnter = () => {
+      if (tweenRef.current) tweenRef.current.pause();
+    };
+
+    const handleMouseLeave = () => {
+      if (!isDragging.current && tweenRef.current) {
+        tweenRef.current.play();
+      }
+    };
+
+    containerRef.current.addEventListener("mouseenter", handleMouseEnter);
+    containerRef.current.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      if (containerRef.current) {
+        containerRef.current.removeEventListener(
+          "mouseenter",
+          handleMouseEnter
+        );
+        containerRef.current.removeEventListener(
+          "mouseleave",
+          handleMouseLeave
+        );
+      }
     };
-  }, [start]);
+  }, [pauseOnHover]);
+
+  // Update animation when direction changes
+  useEffect(() => {
+    if (start && !isDragging.current) {
+      // Restart animation with new direction
+      if (tweenRef.current) tweenRef.current.kill();
+      isAnimating.current = false;
+      startAnimation();
+    }
+  }, [currentDirection, start, startAnimation]);
 
   return (
     <div
@@ -365,9 +362,22 @@ export const InfiniteMovingCards = ({
         ref={scrollerRef}
         className={cn(
           "flex min-w-full shrink-0 gap-16 py-4 w-max flex-nowrap cursor-grab",
-          start && "transition-transform"
+          start && "will-change-transform"
         )}
-      />
+        style={{
+          // Use GPU acceleration for smoother animations
+          transform: "translate3d(0, 0, 0)",
+        }}
+      >
+        {originalItems.current.map((item, index) => (
+          <CardTemplate
+            key={`testimonial-${index}`}
+            quote={item.quote}
+            name={item.name}
+            title={item.title}
+          />
+        ))}
+      </ul>
     </div>
   );
 };

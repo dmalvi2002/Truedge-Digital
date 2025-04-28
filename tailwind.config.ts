@@ -141,7 +141,10 @@ const config = {
             transform: "translateY(-50%)",
           },
         },
+
         scroll: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-33.33%)" },
           to: {
             transform: "translate(calc(-50% - 0.5rem))",
           },
@@ -159,6 +162,9 @@ const config = {
         fifth: "moveInCircle 20s ease infinite",
         scroll:
           "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+        "scroll-fast": "scroll 20s linear infinite",
+        "scroll-slow": "scroll 60s linear infinite",
+        pause: "none",
       },
     },
   },
