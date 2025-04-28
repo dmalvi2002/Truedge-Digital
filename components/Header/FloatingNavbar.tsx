@@ -14,14 +14,27 @@ import { cn } from "@/lib/utils";
 // Logo text component with animation
 const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
   const [scope, animate] = useAnimate();
+  const spansRef = React.useRef<(HTMLElement | null)[]>([]);
 
-  // Run animation when component mounts
+  // Reset the refs array when the component re-renders
+  React.useEffect(() => {
+    spansRef.current = [];
+  }, []);
+
+  // Run animation when component mounts and elements are available
   useEffect(() => {
+    if (!isTopOfPage || spansRef.current.length === 0) return;
+
+    // Filter out any null values from the refs array
+    const validSpans = spansRef.current.filter(Boolean) as HTMLElement[];
+
+    if (validSpans.length === 0) return;
+
     const animateLogo = async () => {
-      if (isTopOfPage) {
+      try {
         // Initial animation - text appearing with glow effect
         await animate(
-          "span",
+          validSpans,
           {
             opacity: [0, 1],
             y: [20, 0],
@@ -34,7 +47,7 @@ const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
           }
         );
 
-        // Continuous floating animation
+        // Continuous floating animation (on the container)
         animate(
           scope.current,
           { y: [0, -8, 0] },
@@ -47,7 +60,7 @@ const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
 
         // Continuous subtle glow animation
         animate(
-          "span",
+          validSpans,
           {
             textShadow: [
               "0 0 5px rgba(111, 134, 245, 0.5)",
@@ -61,10 +74,17 @@ const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
             ease: "easeInOut",
           }
         );
+      } catch (error) {
+        console.error("Animation error:", error);
       }
     };
 
-    animateLogo();
+    // Delay animation slightly to ensure DOM elements are ready
+    const timer = setTimeout(() => {
+      animateLogo();
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [animate, isTopOfPage]);
 
   // Split text into individual characters for letter animation
@@ -84,6 +104,10 @@ const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
       {characters.map((char, index) => (
         <motion.span
           key={index}
+          ref={(el) => {
+            // Store the ref to this element
+            spansRef.current[index] = el;
+          }}
           className="text-base md:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-950 via-gray-100 to-gray-50"
           style={{
             display: char === " " ? "inline-block" : "inline-block",
@@ -96,7 +120,6 @@ const AnimatedLogoText = ({ isTopOfPage }: { isTopOfPage: boolean }) => {
     </motion.div>
   );
 };
-
 // Mobile breadcrumb menu icon
 const BreadcrumbIcon = ({ onClick }: { onClick: () => void }) => (
   <motion.button
