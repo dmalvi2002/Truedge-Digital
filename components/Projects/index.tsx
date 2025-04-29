@@ -48,7 +48,7 @@ const RecentProjects = () => {
                 <img
                   src={item.img}
                   alt={item.title}
-                  className="z-10 absolute inset-0 w-full h-full object-cover p-0 transition-transform duration-300 group-hover:scale-105"
+                  className="z-10 absolute rounded-lg inset-0 w-full h-full object-cover p-0 transition-transform duration-300"
                 />
               </div>
 
