@@ -189,7 +189,7 @@ const ServiceCard = ({
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
-          {service.points.slice(0, 6).map((point, index) => (
+          {service.points.map((point, index) => (
             <div key={index} className="flex items-start gap-2 md:gap-3">
               <span className="text-indigo-400 mt-[2px] flex-shrink-0">
                 <svg

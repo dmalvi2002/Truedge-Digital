@@ -89,9 +89,8 @@ const TypingAnimation = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full max-w-full overflow-hidden p-4 md:p-6 bg-transparent text-white"
+      className="relative flex w-full lg:my-4 my-2 items-center max-w-full overflow-hidden px-4 bg-transparent text-white"
       style={{
-        minHeight: "8rem",
         height: "auto",
       }}
     >
