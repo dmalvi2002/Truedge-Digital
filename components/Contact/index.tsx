@@ -47,7 +47,7 @@ const ContactSection = () => {
         { id: "web-basic", name: "1 Page Website" },
         { id: "web-standard", name: "Business Essential" },
         { id: "web-premium", name: "Business Professional" },
-        { id: "web-custom", name: "Custom Package" },
+        { id: "web-custom", name: "Custom Package Inquiries" },
       ],
     },
     {
@@ -56,7 +56,7 @@ const ContactSection = () => {
       subpackages: [
         { id: "seo-basic", name: "Business Essential" },
         { id: "seo-premium", name: "Business Professional" },
-        { id: "seo-custom", name: "Custom Plan" },
+        { id: "seo-custom", name: "Custom Plan Inquiries" },
       ],
     },
   ];
