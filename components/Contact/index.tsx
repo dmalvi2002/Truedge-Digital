@@ -42,8 +42,9 @@ const ContactSection = () => {
   const packageOptions: PackageOption[] = [
     {
       id: "web-development",
-      name: "Web Development",
+      name: "Web Design & Development",
       subpackages: [
+        { id: "web-custom", name: "Custom Package" },
         { id: "web-basic", name: "1 Page Website" },
         { id: "web-standard", name: "Business Essential" },
         { id: "web-premium", name: "Business Professional" },
@@ -53,8 +54,9 @@ const ContactSection = () => {
       id: "seo-marketing",
       name: "SEO & Digital Marketing",
       subpackages: [
-        { id: "seo-basic", name: "SEO Essentials" },
-        { id: "seo-premium", name: "Complete Digital Marketing" },
+        { id: "seo-custom", name: "Custom Plan" },
+        { id: "seo-basic", name: "Business Essential" },
+        { id: "seo-premium", name: "Business Professional" },
       ],
     },
   ];
@@ -106,7 +108,7 @@ const ContactSection = () => {
         </svg>
       ),
       title: "Phone",
-      content: "+44 (0) 7832 921562",
+      content: "+44 (783) 2921562",
     },
     {
       icon: (
@@ -328,21 +330,23 @@ const ContactSection = () => {
     }
 
     // Validate phone (optional but must be valid if provided)
+    // Validate phone (required)
     const phoneRegex = /^\+?[0-9]{0,15}$/;
-    if (updatedFields[2].value.trim()) {
-      if (!/^[0-9+\s()-]+$/.test(updatedFields[2].value)) {
-        updatedFields[2].error =
-          "Phone number can only contain digits and +()- characters";
-        isValid = false;
-      } else if (updatedFields[2].value.replace(/[^0-9]/g, "").length > 15) {
-        updatedFields[2].error = "Phone number is too long (max 15 digits)";
-        isValid = false;
-      } else if (
-        !phoneRegex.test(updatedFields[2].value.replace(/[\s()-]/g, ""))
-      ) {
-        updatedFields[2].error = "Please enter a valid phone number";
-        isValid = false;
-      }
+    if (!updatedFields[2].value.trim()) {
+      updatedFields[2].error = "Phone number is required";
+      isValid = false;
+    } else if (!/^[0-9+\s()-]+$/.test(updatedFields[2].value)) {
+      updatedFields[2].error =
+        "Phone number can only contain digits and +()- characters";
+      isValid = false;
+    } else if (updatedFields[2].value.replace(/[^0-9]/g, "").length > 15) {
+      updatedFields[2].error = "Phone number is too long (max 15 digits)";
+      isValid = false;
+    } else if (
+      !phoneRegex.test(updatedFields[2].value.replace(/[\s()-]/g, ""))
+    ) {
+      updatedFields[2].error = "Please enter a valid phone number";
+      isValid = false;
     }
 
     // Validate message
