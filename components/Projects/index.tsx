@@ -24,7 +24,7 @@ const RecentProjects = () => {
       <div className="flex flex-wrap items-center justify-center p-4 gap-16 mt-10">
         {projects.map((item) => (
           <div
-            className="lg:min-h-[32.5rem] h-[25rem] flex items-center justify-center lg:w-[32rem] md:w-[28rem] sm:w-96 w-[80vw] relative group"
+            className="lg:min-h-[32.5rem]  h-[25rem] flex items-center justify-center lg:w-[32rem] md:w-[28rem] sm:w-96 w-[80vw] relative group"
             key={item.id}
           >
             {/* Intense blur effect behind the card */}
@@ -43,7 +43,7 @@ const RecentProjects = () => {
                   />
 
                   {/* Consistent blur gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple/30 to-transparent backdrop-blur-3xl opacity-80"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t shadow-2xl from-purple-950 to-indigo-950 backdrop-blur-3xl opacity-80"></div>
                 </div>
                 <img
                   src={item.img}
@@ -91,7 +91,7 @@ const RecentProjects = () => {
                   onClick={() => handleProjectClick(item.link)}
                   className="flex justify-center items-center group/link cursor-pointer"
                 >
-                  <p className="flex lg:text-xl md:text-xs text-sm text-purple group-hover/link:text-purple/80 transition-colors duration-300">
+                  <p className="flex lg:text-xl md:text-xs text-sm text-purple-300 group-hover/link:text-purple/80 transition-colors duration-300">
                     Check Live Site
                   </p>
                   <FaLocationArrow className="ms-3 text-purple group-hover/link:translate-x-1 transition-transform duration-300" />
