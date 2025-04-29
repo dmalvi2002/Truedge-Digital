@@ -31,24 +31,24 @@ const RecentProjects = () => {
             <div className="absolute inset-0 bg-black/40 rounded-3xl blur-3xl opacity-50 group-hover:opacity-90 transition-opacity duration-300"></div>
 
             <PinContainer title={item.title} href={item.link}>
-              <div className="relative flex items-center justify-center lg:w-[30rem] md:w-[26rem] sm:w-96 w-[80vw] overflow-hidden h-[20vh] lg:h-[30vh] mb-10">
+              <div className="relative flex items-center justify-center w-full aspect-video max-h-[30vh] lg:max-h-[35vh] mb-6 lg:mb-8 overflow-hidden">
                 <div
-                  className="relative w-full h-full overflow-hidden lg:rounded-3xl backdrop-blur-3xl"
+                  className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl lg:rounded-3xl backdrop-blur-3xl"
                   style={{ backgroundColor: "#13162D" }}
                 >
                   <img
                     src="/bg.png"
-                    alt="bgimg"
-                    className="mix-blend-overlay"
+                    alt="background"
+                    className="mix-blend-overlay w-full h-full object-cover"
                   />
 
-                  {/* Heavy blur gradient overlay */}
+                  {/* Consistent blur gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-purple/30 to-transparent backdrop-blur-3xl opacity-80"></div>
                 </div>
                 <img
                   src={item.img}
-                  alt="cover"
-                  className="z-10 absolute bottom-0 transition-transform duration-300 group-hover:scale-105"
+                  alt={item.title}
+                  className="z-10 absolute inset-0 w-full h-full object-contain p-3 lg:p-5 transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
 
