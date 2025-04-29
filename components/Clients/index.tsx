@@ -37,7 +37,7 @@ const Clients = () => {
     },
   };
   return (
-    <section id="testimonials" className="py-20">
+    <section id="testimonials" className="pb-20">
       <Heading
         text="What Our"
         highlightedText="Clients Are Saying"
@@ -55,7 +55,7 @@ const Clients = () => {
         </div>
 
         {/* Styled container for company logos */}
-        <div className="mt-16 w-full">
+        <div className="mt-4 w-full">
           <Heading
             text="Our Trusted"
             highlightedText="Companies"

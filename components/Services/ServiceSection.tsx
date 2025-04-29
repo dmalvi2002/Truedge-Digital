@@ -67,7 +67,7 @@ const ServiceInfoCard = ({
   return (
     <div
       ref={cardRef}
-      className="min-h-[80vh] flex items-center justify-center py-24 relative"
+      className="min-h-[80vh] flex items-center justify-center py-10 relative"
       id={`service-${service.id}`}
       style={{
         opacity: isVisible ? 1 : 0,
@@ -300,12 +300,12 @@ const ServiceSection = () => {
       </div>
 
       {/* Section header */}
-      <div className="relative z-10 container mx-auto pt-20 px-4">
+      <div className="relative z-10 container mx-auto  px-4">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
           <Heading text="Our" highlightedText="Services" className="" />
         </motion.div>

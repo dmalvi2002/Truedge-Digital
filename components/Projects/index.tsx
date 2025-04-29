@@ -14,7 +14,7 @@ const RecentProjects = () => {
   };
 
   return (
-    <div className="py-20">
+    <div className="pt-16 pb-10">
       <a href="#projects" id="projects" />
       <Heading
         text="A small selection of"

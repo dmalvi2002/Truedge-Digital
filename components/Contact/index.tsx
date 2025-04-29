@@ -475,7 +475,7 @@ const ContactSection = () => {
   return (
     <div
       ref={contactSectionRef}
-      className="relative py-24 bg-transparent overflow-hidden"
+      className="relative pt-16 pb-10 bg-transparent overflow-hidden"
       id="contact"
     >
       {/* Particles background */}
@@ -486,7 +486,7 @@ const ContactSection = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <Heading text="Get in" highlightedText="Touch" className="" />
         </div>
 
@@ -937,10 +937,10 @@ const ContactSection = () => {
             </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 20 }}
               animate={controls}
               variants={{
-                hidden: { opacity: 0, y: 20 },
+                hidden: { opacity: 1, y: 20 },
                 visible: {
                   opacity: 1,
                   y: 0,
