@@ -283,14 +283,19 @@ export const FloatingNav = ({
           {/* Mobile logo and breadcrumb */}
           <div className="flex md:hidden items-center">
             {navItems.find((item) => item.logo && item.img) ? (
-              <img
-                src={navItems.find((item) => item.logo && item.img)?.img}
-                alt="Logo"
-                className="h-8"
-              />
+              <>
+                <img
+                  src={navItems.find((item) => item.logo && item.img)?.img}
+                  alt="Logo"
+                  className="h-8"
+                />
+                <h2 className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-gray-50 to-white font-bold px-2 text-xl">
+                  Truedge Digital
+                </h2>
+              </>
             ) : (
               <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500 font-bold">
-                Truedge
+                Truedge Digital
               </div>
             )}
           </div>
