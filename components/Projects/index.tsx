@@ -43,12 +43,12 @@ const RecentProjects = () => {
                   />
 
                   {/* Consistent blur gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t shadow-2xl from-purple-950 to-indigo-950 backdrop-blur-3xl opacity-80"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t sh from-purple-950 to-indigo-950 backdrop-blur-3xl opacity-80"></div>
                 </div>
                 <img
                   src={item.img}
                   alt={item.title}
-                  className="z-10 absolute inset-0 w-full h-full object-contain p-3 lg:p-5 transition-transform duration-300 group-hover:scale-105"
+                  className="z-10 absolute inset-0 w-full h-full object-cover p-0 transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
 
