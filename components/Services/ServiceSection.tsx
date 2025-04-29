@@ -46,6 +46,7 @@ const ServiceInfoCard = ({
 }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const isActive = activeIndex === index;
+  const [showAllPoints, setShowAllPoints] = useState(false);
 
   // Register this element with the intersection handler
   useEffect(() => {
@@ -127,41 +128,51 @@ const ServiceInfoCard = ({
           </p>
 
           <ul className="space-y-3">
-            {service.points.slice(0, 6).map((point, i) => (
-              <motion.li
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{
-                  opacity: isActive ? 1 : 0,
-                  x: isActive ? 0 : -20,
-                }}
-                transition={{
-                  duration: 0.3,
-                  delay: isActive ? i * 0.05 : 0, // Reduced delay for better performance
-                  ease: "easeOut",
-                }}
-                className="flex items-start gap-3"
+            {service.points
+              .slice(0, showAllPoints ? service.points.length : 6)
+              .map((point, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{
+                    opacity: isActive ? 1 : 0,
+                    x: isActive ? 0 : -20,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    delay: isActive ? i * 0.05 : 0, // Reduced delay for better performance
+                    ease: "easeOut",
+                  }}
+                  className="flex items-start gap-3"
+                >
+                  <span className="text-indigo-400 mt-1 flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span className="text-gray-200">{point}</span>
+                </motion.li>
+              ))}
+            {service.points.length > 6 && (
+              <button
+                onClick={() => setShowAllPoints(!showAllPoints)}
+                className="text-indigo-400 mt-3 hover:underline"
               >
-                <span className="text-indigo-400 mt-1 flex-shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-                <span className="text-gray-200">{point}</span>
-              </motion.li>
-            ))}
+                {showAllPoints ? "See Less" : "See More"}
+              </button>
+            )}
           </ul>
 
-          <div className="mt-8 p-4">
+          <div className="mt-4 p-4">
             <MagicButton
               title="Learn More"
               icon={null}
