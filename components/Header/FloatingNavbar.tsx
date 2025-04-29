@@ -160,9 +160,16 @@ const MobileOverlay = ({
           className="fixed inset-0 z-[6000] bg-black/90 backdrop-blur-md flex flex-col"
         >
           <div className="flex justify-between items-center p-5 border-b border-white/10">
-            <div className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-blue-500 to-blue-950 font-bold text-2xl">
-              Truedge Digital
-            </div>
+            <a href="/" className="flex items-center gap-2">
+              <img
+                src={navItems.find((item) => item.logo && item.img)?.img}
+                alt="Logo"
+                className="h-8"
+              />
+              <h2 className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-gray-50 to-white font-bold  text-xl">
+                Truedge Digital
+              </h2>
+            </a>
             <motion.button
               onClick={onClose}
               whileTap={{ scale: 0.95 }}
@@ -283,16 +290,16 @@ export const FloatingNav = ({
           {/* Mobile logo and breadcrumb */}
           <div className="flex md:hidden items-center">
             {navItems.find((item) => item.logo && item.img) ? (
-              <>
+              <a href="/" className="flex items-center gap-2">
                 <img
                   src={navItems.find((item) => item.logo && item.img)?.img}
                   alt="Logo"
                   className="h-8"
                 />
-                <h2 className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-gray-50 to-white font-bold px-2 text-xl">
+                <h2 className="text-transparent bg-clip-text bg-gradient-to-t from-gray-500 via-gray-50 to-white font-bold  text-xl">
                   Truedge Digital
                 </h2>
-              </>
+              </a>
             ) : (
               <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-indigo-500 to-blue-500 font-bold">
                 Truedge Digital
