@@ -416,7 +416,7 @@ const CustomCursor: React.FC<CustomCursorProps> = ({
   }
 
   return (
-    <>
+    <div className=" hidden lg:block">
       {/* Cursor */}
       <div
         ref={cursorRef}
@@ -514,7 +514,7 @@ const CustomCursor: React.FC<CustomCursorProps> = ({
         }
         */
       `}</style>
-    </>
+    </div>
   );
 };
 

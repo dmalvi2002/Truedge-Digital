@@ -95,7 +95,7 @@ const GraffitiBackground = () => {
     return characters.map((char, i) => (
       <div
         key={`char-${i}`}
-        className="graffiti-character absolute"
+        className="graffiti-character absolute "
         style={{
           width: "30px",
           height: "30px",
@@ -436,7 +436,7 @@ const GraffitiBackground = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-10"
+      className="fixed  hidden lg:block inset-0 w-full h-full pointer-events-none z-10"
       style={{
         mixBlendMode: "overlay",
         perspective: "1000px",
