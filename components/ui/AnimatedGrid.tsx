@@ -770,7 +770,7 @@ const AnimatedGrid = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden"
+      className="fixed  hidden lg:block inset-0 w-full h-full pointer-events-none z-0 overflow-hidden"
       style={{ backgroundColor: "transparent" }}
     >
       {/* Base static grid - always visible gray grid */}

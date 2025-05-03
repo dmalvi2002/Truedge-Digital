@@ -92,7 +92,7 @@ const RecentProjects = () => {
                   className="flex justify-center items-center group/link cursor-pointer"
                 >
                   <p className="flex lg:text-xl md:text-xs text-sm text-purple-300 group-hover/link:text-purple/80 transition-colors duration-300">
-                    Check Live Site
+                    Check Demo
                   </p>
                   <FaLocationArrow className="ms-3 text-purple group-hover/link:translate-x-1 transition-transform duration-300" />
                 </button>
