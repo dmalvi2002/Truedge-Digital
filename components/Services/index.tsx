@@ -122,6 +122,9 @@ const ModalCard = ({
       <div className="mt-6 flex justify-center">
         <MagicButton
           title="Get Quotation"
+          handleClick={() => {
+            window.location.href = "/#contact";
+          }}
           icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
