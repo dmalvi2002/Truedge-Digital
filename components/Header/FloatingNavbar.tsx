@@ -328,7 +328,7 @@ export const FloatingNav = ({
                   <img
                     src={navItem.img}
                     alt={navItem.name}
-                    className="h-8 !cursor-pointer"
+                    className="h-8 mx-auto items-center !cursor-pointer"
                   />
                 ) : (
                   <span className="text-sm !cursor-pointer">

@@ -491,7 +491,21 @@ const ContactSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <Heading text="Get in" highlightedText="Touch" className="" />
+          <Heading text="Get in" highlightedText="Touch" className="mb-4" />
+          <p
+            ref={subtitleRef}
+            className="text-gray-300 max-w-xl mx-auto items-center text-lg md:text-xl font-light mb-6 glow-text"
+          >
+            Your message matters to us. A dedicated team member will respond
+            within 30 minutes.
+          </p>
+
+          <style jsx>{`
+            .glow-text {
+              text-shadow: 0 0 8px rgba(186, 85, 211, 0.4),
+                0 0 16px rgba(186, 85, 211, 0.3);
+            }
+          `}</style>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
