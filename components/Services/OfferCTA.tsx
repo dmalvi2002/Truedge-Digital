@@ -15,7 +15,7 @@ const OfferCTA = () => {
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6">
           <span className="text-white">Starting from with only </span>
-          <span className="text-yellow-300">450£</span>
+          <span className="text-yellow-300">£450</span>
           {/* <span className="text-white">... </span> */}
           <span className="text-purple-400 block">
             What are you waiting for?

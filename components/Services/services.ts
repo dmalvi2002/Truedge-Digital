@@ -43,7 +43,7 @@ export const services: ServiceData[] = [
       {
         id: 101,
         title: "1 Page Website",
-        pricing: "450£",
+        pricing: "£450",
         features: [
           "1 Page Website",
           "Includes Contact Page",
@@ -60,7 +60,7 @@ export const services: ServiceData[] = [
       {
         id: 102,
         title: "Business Essential",
-        pricing: "975£",
+        pricing: "£975",
         features: [
           "Up to 6 Page Website",
           "Includes BLOG Page & Testimonial & Gallery Page",
@@ -81,7 +81,7 @@ export const services: ServiceData[] = [
       {
         id: 103,
         title: "Business Professional",
-        pricing: "1,450£",
+        pricing: "£1,450",
         features: [
           "Includes Everything from Business Essential",
           "Fully Customised 10+ Page Website",
@@ -122,7 +122,7 @@ export const services: ServiceData[] = [
       {
         id: 201,
         title: "Business Essential",
-        pricing: "199£ per month",
+        pricing: "£199 per month",
         features: [
           "Create & Manage 2 Social Media Accounts",
           "2 Social Posts every week",
@@ -143,7 +143,7 @@ export const services: ServiceData[] = [
       {
         id: 202,
         title: "Business Professional",
-        pricing: "299£ per month",
+        pricing: "£299 per month",
         features: [
           "Everything in Business Essentials",
           "Logo design",
