@@ -494,10 +494,11 @@ const ContactSection = () => {
           <Heading text="Get in" highlightedText="Touch" className="mb-4" />
           <p
             ref={subtitleRef}
-            className="text-gray-300 max-w-xl mx-auto items-center text-lg md:text-xl font-light mb-6 glow-text"
+            className="text-gray-300 max-w-xl mx-auto items-center text-lg md:text-xl font-normal mb-6 glow-text"
           >
             Your message matters to us. A dedicated team member will respond
-            within 30 minutes.
+            within{" "}
+            <span className="text-indigo-400 font-semibold">30 minutes.</span>
           </p>
 
           <style jsx>{`
