@@ -91,25 +91,20 @@ const ContactSection = () => {
 
   // Contact information data
   const contactInfo = [
-    // {
-    //   icon: (
-    //     <svg
-    //       className="w-6 h-6"
-    //       fill="none"
-    //       stroke="currentColor"
-    //       viewBox="0 0 24 24"
-    //     >
-    //       <path
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //         strokeWidth="2"
-    //         d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-    //       />
-    //     </svg>
-    //   ),
-    //   title: "Phone",
-    //   content: "+44 (783) 2921562",
-    // },
+    {
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M20.52 3.48A11.83 11.83 0 0 0 3.5 20.5l-1.38 4.5 4.64-1.34A11.84 11.84 0 1 0 20.52 3.48Zm-4.67 13.37c-.4.53-1.1.77-1.73.52-1.93-.78-4.07-2.84-4.83-4.86a1.38 1.38 0 0 1 .34-1.54c.27-.26.54-.54.8-.81.24-.25.3-.6.17-.91a14.16 14.16 0 0 0-.75-1.61c-.21-.42-.74-.56-1.14-.32a8.76 8.76 0 0 0-1.8 1.57c-.94 1.07-1.03 2.59-.24 4.31 1.12 2.56 3.85 5.08 6.48 5.9 1.38.45 2.66.26 3.62-.51.59-.48 1.16-1 1.7-1.55.33-.35.3-.91-.07-1.22-.33-.28-.7-.56-1.1-.83-.4-.26-.97-.17-1.27.22Z" />
+        </svg>
+      ),
+      title: "Whatsapp",
+      content: "+44 7907 901171",
+    },
     {
       icon: (
         <svg
@@ -972,36 +967,52 @@ const ContactSection = () => {
             >
               {/* Contact Info Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {contactInfo.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ y: -5 }}
-                    className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm flex flex-col h-full"
-                  >
-                    <div className="flex items-start space-x-3 flex-1">
-                      <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-2 flex-shrink-0 w-10 h-10 flex items-center justify-center">
-                        {item.icon}
-                      </div>
-                      <div className="flex flex-col justify-center min-w-0 flex-1">
-                        <h3 className="font-bold text-gray-200 text-base mb-0.5 truncate">
-                          {item.title}
-                        </h3>
-                        <p className="text-indigo-300/90 font-medium text-sm overflow-hidden text-ellipsis">
-                          {item.content}
-                        </p>
-                      </div>
-                    </div>
-                    <motion.div
-                      className="w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent mt-3 rounded-full"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                    />
-                  </motion.div>
-                ))}
+                {contactInfo.map((item, index) => {
+                  const isWhatsApp = item.title === "Whatsapp";
+                  const Wrapper = isWhatsApp ? "a" : "div";
+                  const wrapperProps = isWhatsApp
+                    ? {
+                        href: "https://wa.me/447907901171",
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "block", // Ensures display block
+                      }
+                    : {};
+
+                  return (
+                    <Wrapper key={index} {...wrapperProps}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        whileHover={{ y: -5 }}
+                        className={`bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5 rounded-xl border border-slate-700/50 shadow-lg hover:shadow-indigo-500/10 backdrop-blur-sm flex flex-col h-full ${
+                          isWhatsApp ? "cursor-pointer" : ""
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3 flex-1">
+                          <div className="rounded-lg bg-indigo-600/20 text-indigo-400 p-2 flex-shrink-0 w-10 h-10 flex items-center justify-center">
+                            {item.icon}
+                          </div>
+                          <div className="flex flex-col justify-center min-w-0 flex-1">
+                            <h3 className="font-bold text-gray-200 text-base mb-0.5 truncate">
+                              {item.title}
+                            </h3>
+                            <p className="text-indigo-300/90 font-medium text-sm overflow-hidden text-ellipsis">
+                              {item.content}
+                            </p>
+                          </div>
+                        </div>
+                        <motion.div
+                          className="w-full h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent mt-3 rounded-full"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.6, delay: 0.2 }}
+                        />
+                      </motion.div>
+                    </Wrapper>
+                  );
+                })}
               </div>
             </motion.div>
           </div>
